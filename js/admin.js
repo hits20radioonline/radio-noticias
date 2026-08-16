@@ -9,11 +9,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const id = document.getElementById('noticia-id').value;
         const titulo = document.getElementById('admin-titulo').value;
         const imagen = document.getElementById('admin-imagen').value;
-        const categoria = document.getElementById('admin-categoria').value;
+        const categoria = document.getElementById('admin-categoria').value.trim().toLowerCase();
         const cuerpo = document.getElementById('admin-cuerpo').value;
+        
+        // Recogemos fecha y hora del formulario
+        const fecha = document.getElementById('admin-fecha').value;
+        const hora = document.getElementById('admin-hora').value;
 
         const action = id ? "update" : "create";
-        const datos = { action, id, titulo, imagen, categoria, cuerpo };
+        const datos = { action, id, titulo, imagen, categoria, cuerpo, fecha, hora };
 
         fetch(urlAPI, {
             method: 'POST',
@@ -50,12 +54,18 @@ function cargarNoticiasAdmin() {
 
             if (!Array.isArray(data)) return;
 
-            data.forEach(noticia => {
+            // Filtramos para mostrar únicamente las últimas 2 noticias
+            const ultimasDos = data.slice(-2);
+
+            ultimasDos.forEach(noticia => {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #ddd';
                 
+                // Formateamos para mostrar fecha y hora juntas si existen
+                const fechaHoraTexto = noticia.fecha && noticia.hora ? `${noticia.fecha} ${noticia.hora}` : (noticia.fecha || '');
+
                 tr.innerHTML = `
-                    <td style="padding: 10px;">${noticia.fecha || ''}</td>
+                    <td style="padding: 10px;">${fechaHoraTexto}</td>
                     <td style="padding: 10px; font-weight: bold;">${noticia.titulo || ''}</td>
                     <td style="padding: 10px; text-transform: capitalize;">${noticia.categoria || ''}</td>
                     <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
@@ -72,8 +82,15 @@ function prepararEdicion(noticia) {
     document.getElementById('noticia-id').value = noticia.id;
     document.getElementById('admin-titulo').value = noticia.titulo;
     document.getElementById('admin-imagen').value = noticia.imagen;
-    document.getElementById('admin-categoria').value = noticia.categoria.toLowerCase();
+    document.getElementById('admin-categoria').value = (noticia.categoria || '').trim().toLowerCase();
     document.getElementById('admin-cuerpo').value = noticia.cuerpo;
+    
+    if (noticia.fecha) {
+        document.getElementById('admin-fecha').value = noticia.fecha;
+    }
+    if (noticia.hora) {
+        document.getElementById('admin-hora').value = noticia.hora;
+    }
 
     document.getElementById('btn-guardar').innerText = "Actualizar Noticia";
     document.getElementById('btn-cancelar-edicion').style.display = 'inline-block';
