@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => console.error('Error al conectar con la API:', error));
 });
 
-// Función centralizada para renderizar con ordenamiento y filtro de 3 días
+// Función centralizada para renderizar con ordenamiento estricto y filtro de 3 días
 function renderizarNoticias(listaParaPintar) {
   const nacionales = document.getElementById('grid-nacionales');
   const internacionales = document.getElementById('grid-internacionales');
@@ -37,11 +37,11 @@ function renderizarNoticias(listaParaPintar) {
   const tresDiasEnMilisegundos = 3 * 24 * 60 * 60 * 1000;
   const terminoBusqueda = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim() : '';
 
-  // 1. Ordenar de más nueva a más vieja basándose en fecha/hora
+  // 1. Ordenar estrictamente de más nueva a más vieja usando .getTime()
   let listaOrdenada = [...listaParaPintar].sort((a, b) => {
-    let fechaA = new Date(a.fecha || a.Fecha || 0);
-    let fechaB = new Date(b.fecha || b.Fecha || 0);
-    return fechaB - fechaA;
+    let fechaA = new Date(a.fecha || a.Fecha || 0).getTime();
+    let fechaB = new Date(b.fecha || b.Fecha || 0).getTime();
+    return fechaB - fechaA; // De mayor a menor (más reciente primero)
   });
 
   listaOrdenada.forEach(noticia => {
@@ -59,7 +59,7 @@ function renderizarNoticias(listaParaPintar) {
     if (contenedor) {
       let fechaCruda = noticia.fecha || noticia.Fecha;
       let fechaNoticia = new Date(fechaCruda || 0);
-      let diferenciaTiempo = ahora - fechaNoticia;
+      let diferenciaTiempo = ahora.getTime() - fechaNoticia.getTime();
       let esMasDeTresDias = diferenciaTiempo > tresDiasEnMilisegundos;
 
       // Si supera los 3 días y el usuario NO está usando el buscador activamente, se omite de la portada
@@ -73,7 +73,7 @@ function renderizarNoticias(listaParaPintar) {
       let fechaTexto = formatearFechaYHora(fechaCruda, noticia.hora || noticia.Hora);
 
       card.innerHTML = `
-        <img src="${noticia.imagen || ''}" alt="Imagen noticia" style="width: 100%; height: auto; display: block;">
+        <img src="${noticia.imagen || ''}" alt="Imagen noticia" style="width: 100%; height: 160px; object-fit: cover; display: block;">
         <div class="card-body" style="padding: 12px;">
           <div style="font-size: 0.75rem; color: #d9534f; font-weight: bold; margin-bottom: 6px;">${fechaTexto}</div>
           <div class="card-title" style="font-weight: 600; font-size: 0.85rem; line-height: 1.2; height: 2.4em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: #222;">
