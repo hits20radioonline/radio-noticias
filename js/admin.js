@@ -8,7 +8,7 @@ document.getElementById('formNoticia').addEventListener('submit', function(e) {
     cuerpo: document.getElementById('cuerpo').value
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbxz4jF6gAN35Myd69T745m8KyJPIf5-Ce0oZOzRFhGpMSctFl50pb8fB1CimuuBS-6S/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzYGRTbatfZiZyA9t-ypMEEDnO-kcpChIyYi_eV-lYFEeV8ziIx0cPU3pnsI_F3Hg7b/exec", {
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
