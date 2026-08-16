@@ -18,10 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const categoria = (noticia.categoria || '').toLowerCase().trim();
         let contenedor = null;
 
-        if (categoria.includes('nacional')) {
-          contenedor = nacionales;
-        } else if (categoria.includes('internacional')) {
+        // IMPORTANTE: Evaluamos "internacional" primero para que no sea interceptado por "nacional"
+        if (categoria.includes('internacional')) {
           contenedor = internacionales;
+        } else if (categoria.includes('nacional')) {
+          contenedor = nacionales;
         } else if (categoria.includes('provincial')) {
           contenedor = provinciales;
         }
