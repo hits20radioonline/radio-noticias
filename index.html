@@ -16,19 +16,19 @@
         <!-- ÁREA CENTRAL DE NOTICIAS (3 secciones con 3 tarjetas cada una) -->
         <main id="noticias-container">
             <section class="categoria-section">
-    <h2>Noticias Nacionales</h2>
-    <div class="grid" id="grid-nacionales"></div>
-</section>
+                <h2>Noticias Nacionales</h2>
+                <div class="grid" id="grid-nacionales"></div>
+            </section>
 
-<section class="categoria-section">
-    <h2>Noticias Internacionales</h2>
-    <div class="grid" id="grid-internacionales"></div>
-</section>
+            <section class="categoria-section">
+                <h2>Noticias Internacionales</h2>
+                <div class="grid" id="grid-internacionales"></div>
+            </section>
 
-<section class="categoria-section">
-    <h2>Noticias Provinciales</h2>
-    <div class="grid" id="grid-provinciales"></div>
-</section>
+            <section class="categoria-section">
+                <h2>Noticias Provinciales</h2>
+                <div class="grid" id="grid-provinciales"></div>
+            </section>
         </main>
 
         <!-- LATERAL DERECHO -->
@@ -71,6 +71,10 @@
         <div class="modal-content">
             <span class="close-btn" onclick="cerrarNoticia()">&times;</span>
             <span id="modal-categoria" class="badge"></span>
+            
+            <!-- FECHA Y HORA DE LA PUBLICACIÓN -->
+            <span id="modal-fecha" style="font-size: 0.75rem; color: #666; display: block; margin: 5px 0 10px 0; font-weight: bold;"></span>
+            
             <h2 id="modal-titulo"></h2>
             <img id="modal-imagen" src="" alt="">
             <p id="modal-cuerpo"></p>
