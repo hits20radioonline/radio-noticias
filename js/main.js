@@ -39,12 +39,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           }
 
+          // SOLO IMAGEN, FECHA Y TÍTULO (SIN EXTRACTO DE CUERPO)
           card.innerHTML = `
             <img src="${noticia.imagen || ''}" alt="Imagen noticia">
             <div class="card-body">
               <span class="badge" style="font-size: 0.65rem; padding: 2px 6px; margin-bottom: 5px; display: inline-block;">${fechaTexto}</span>
-              <div class="card-title">${noticia.titulo || 'Sin título'}</div>
-              <div class="card-desc">${(noticia.cuerpo || '').substring(0, 75)}...</div>
+              <div class="card-title" style="font-weight: bold; font-size: 0.95rem;">${noticia.titulo || 'Sin título'}</div>
             </div>
           `;
 
@@ -67,6 +67,7 @@ function abrirNoticiaModal(noticia) {
   document.getElementById('modal-categoria').innerText = noticia.categoria || '';
   document.getElementById('modal-titulo').innerText = noticia.titulo || '';
   document.getElementById('modal-imagen').src = noticia.imagen || '';
+  // MUESTRA TODO EL CUERPO DE LA NOTICIA SIN RECORTAR
   document.getElementById('modal-cuerpo').innerText = noticia.cuerpo || '';
   document.getElementById('modal-noticia').style.display = 'flex';
 
