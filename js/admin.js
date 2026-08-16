@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const categoria = document.getElementById('admin-categoria').value.trim().toLowerCase();
         const cuerpo = document.getElementById('admin-cuerpo').value;
         
-        // Recogemos fecha y hora del formulario y las limpiamos por si traen formatos ISO/T
         let fecha = document.getElementById('admin-fecha').value;
         let hora = document.getElementById('admin-hora').value;
 
@@ -53,6 +52,38 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Función unificada y blindada para limpiar la fecha y hora de forma exacta
+function formatearFechaYHora(fechaCruda, horaCruda) {
+  if (!fechaCruda) return '';
+
+  let fechaStr = String(fechaCruda).trim();
+  let fechaLimpia = '';
+  let horaFinal = '';
+
+  if (fechaStr.includes('T')) {
+    fechaLimpia = fechaStr.split('T')[0];
+  } else {
+    fechaLimpia = fechaStr.substring(0, 10);
+  }
+
+  let fuenteHora = horaCruda;
+  if ((!fuenteHora || String(fuenteHora).trim() === '' || String(fuenteHora).trim() === 'null') && fechaStr.includes('T')) {
+    fuenteHora = fechaStr.split('T')[1];
+  }
+
+  if (fuenteHora !== undefined && fuenteHora !== null && String(fuenteHora).trim() !== '' && String(fuenteHora).trim() !== 'null') {
+    let hStr = String(fuenteHora).trim().replace('Z', '');
+    let match = hStr.match(/\d{2}:\d{2}/);
+    if (match) {
+      horaFinal = match[0];
+    } else if (hStr.toLowerCase().includes('m')) {
+      horaFinal = hStr;
+    }
+  }
+
+  return horaFinal ? `${fechaLimpia} - ${horaFinal}` : fechaLimpia;
+}
+
 function cargarNoticiasAdmin() {
     fetch(urlAPI)
         .then(res => res.json())
@@ -62,22 +93,15 @@ function cargarNoticiasAdmin() {
 
             if (!Array.isArray(data)) return;
 
-            // Filtramos para mostrar únicamente las últimas 2 noticias
             const ultimasDos = data.slice(-2);
 
             ultimasDos.forEach(noticia => {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #ddd';
                 
-                // Limpiamos la fecha y la hora para la visualización en la tabla de administración
-                let fLimpia = noticia.fecha ? String(noticia.fecha).split('T')[0] : '';
-                let hLimpia = noticia.hora ? String(noticia.hora) : '';
-                if (hLimpia.includes('T')) {
-                    const p = hLimpia.split('T')[1];
-                    hLimpia = p ? p.substring(0, 5) : hLimpia;
-                }
-
-                const fechaHoraTexto = fLimpia && hLimpia ? `${fLimpia} - ${hLimpia}` : (fLimpia || hLimpia || 'Sin fecha');
+                // Usamos la función blindada para evitar cualquier desfase de zona horaria (-0416)
+                let fechaHoraTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
+                if (!fechaHoraTexto) fechaHoraTexto = 'Sin fecha';
 
                 tr.innerHTML = `
                     <td style="padding: 10px;">${fechaHoraTexto}</td>
