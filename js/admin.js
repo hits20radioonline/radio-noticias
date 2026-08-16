@@ -1,72 +1,117 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Noticias</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body style="background: #f4f6f7;">
+const urlAPI = "https://script.google.com/macros/s/AKfycbybrDtc_xXoIYgG56TflhwSpz7ijU2bhRrGQUCdH1XPV-2phGvZ5FW2XbWSPY-LKMQj/exec";
 
-    <div class="admin-container" style="max-width: 900px; margin: 30px auto; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <h2>Panel de Administración de Noticias</h2>
-        <hr style="margin-bottom: 20px;">
+document.addEventListener("DOMContentLoaded", function () {
+    cargarNoticiasAdmin();
 
-        <!-- FORMULARIO DE CREACIÓN Y EDICIÓN -->
-        <form id="form-admin-noticia" style="background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
-            <input type="hidden" id="noticia-id">
-            
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Título de la Noticia:</label>
-            <input type="text" id="admin-titulo" required style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
+    document.getElementById('form-admin-noticia').addEventListener('submit', function (e) {
+        e.preventDefault();
+        
+        const id = document.getElementById('noticia-id').value;
+        const titulo = document.getElementById('admin-titulo').value;
+        const imagen = document.getElementById('admin-imagen').value;
+        const categoria = document.getElementById('admin-categoria').value;
+        const cuerpo = document.getElementById('admin-cuerpo').value;
 
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">URL de la Imagen:</label>
-            <input type="url" id="admin-imagen" required style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
+        const action = id ? "update" : "create";
+        const datos = { action, id, titulo, imagen, categoria, cuerpo };
 
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Categoría:</label>
-            <select id="admin-categoria" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="provincial">Provincial</option>
-                <option value="nacional">Nacional</option>
-                <option value="internacional">Internacional</option>
-            </select>
+        fetch(urlAPI, {
+            method: 'POST',
+            body: JSON.stringify(datos)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.resultado === "success") {
+                alert(id ? "Noticia actualizada con éxito" : "Noticia publicada con éxito");
+                
+                const noticiaIdFinal = id || data.id;
+                const baseUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+                const linkCompleto = `${baseUrl}?id=${noticiaIdFinal}`;
 
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Cuerpo de la Noticia:</label>
-            <textarea id="admin-cuerpo" rows="5" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                document.getElementById('input-link-compartir').value = linkCompleto;
+                document.getElementById('resultado-publicacion').style.display = 'block';
 
-            <div style="display: flex; gap: 10px;">
-                <button type="submit" id="btn-guardar" style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Publicar Noticia</button>
-                <button type="button" id="btn-cancelar-edicion" onclick="limpiarFormulario()" style="background: #7f8c8d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; display: none;">Cancelar Edición</button>
-            </div>
-        </form>
+                limpiarFormulario();
+                cargarNoticiasAdmin();
+            } else {
+                alert("Hubo un error al procesar la solicitud.");
+            }
+        })
+        .catch(err => console.error("Error:", err));
+    });
+});
 
-        <!-- CAJA DE ENLACE LISTO PARA COPIAR A REDES -->
-        <div id="resultado-publicacion" style="display: none; margin-top: 20px; padding: 15px; background: #e9f7ef; border: 1px solid #2ecc71; border-radius: 5px;">
-            <h3 style="margin-top: 0; color: #27ae60; font-size: 1.1rem;">¡Publicación exitosa!</h3>
-            <p style="font-size: 0.9rem; margin-bottom: 8px;">Copia este enlace para compartir en Facebook, WhatsApp u otras redes:</p>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="input-link-compartir" readonly style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-size: 0.85rem;">
-                <button type="button" onclick="copiarLinkNoticia()" style="background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Copiar Link</button>
-            </div>
-            <span id="copiado-aviso" style="color: #27ae60; font-size: 0.8rem; display: none; margin-top: 5px;">¡Enlace copiado al portapapeles!</span>
-        </div>
+function cargarNoticiasAdmin() {
+    fetch(urlAPI)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('lista-admin-body');
+            tbody.innerHTML = '';
 
-        <!-- LISTADO DE GESTIÓN (EDITAR / BORRAR) -->
-        <h3 style="margin-top: 40px;">Noticias Publicadas</h3>
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
-                <thead>
-                    <tr style="background: #333; color: white; text-align: left;">
-                        <th style="padding: 10px;">Fecha</th>
-                        <th style="padding: 10px;">Título</th>
-                        <th style="padding: 10px;">Categoría</th>
-                        <th style="padding: 10px; text-align: center;">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="lista-admin-body"></tbody>
-            </table>
-        </div>
-    </div>
+            if (!Array.isArray(data)) return;
 
-    <!-- Vinculado correctamente dentro de la carpeta js/ -->
-    <script src="js/admin.js"></script>
-</body>
-</html>
+            data.forEach(noticia => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #ddd';
+                
+                tr.innerHTML = `
+                    <td style="padding: 10px;">${noticia.fecha || ''}</td>
+                    <td style="padding: 10px; font-weight: bold;">${noticia.titulo || ''}</td>
+                    <td style="padding: 10px; text-transform: capitalize;">${noticia.categoria || ''}</td>
+                    <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
+                        <button onclick='prepararEdicion(${JSON.stringify(noticia)})' style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Editar</button>
+                        <button onclick="borrarNoticia('${noticia.id}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+}
+
+function prepararEdicion(noticia) {
+    document.getElementById('noticia-id').value = noticia.id;
+    document.getElementById('admin-titulo').value = noticia.titulo;
+    document.getElementById('admin-imagen').value = noticia.imagen;
+    document.getElementById('admin-categoria').value = noticia.categoria.toLowerCase();
+    document.getElementById('admin-cuerpo').value = noticia.cuerpo;
+
+    document.getElementById('btn-guardar').innerText = "Actualizar Noticia";
+    document.getElementById('btn-cancelar-edicion').style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function limpiarFormulario() {
+    document.getElementById('form-admin-noticia').reset();
+    document.getElementById('noticia-id').value = '';
+    document.getElementById('btn-guardar').innerText = "Publicar Noticia";
+    document.getElementById('btn-cancelar-edicion').style.display = 'none';
+}
+
+function borrarNoticia(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar esta noticia?")) {
+        fetch(urlAPI, {
+            method: 'POST',
+            body: JSON.stringify({ action: "delete", id: id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.resultado === "success") {
+                alert("Noticia eliminada correctamente.");
+                cargarNoticiasAdmin();
+            } else {
+                alert("No se pudo eliminar la noticia.");
+            }
+        })
+        .catch(err => console.error("Error al borrar:", err));
+    }
+}
+
+function copiarLinkNoticia() {
+    const inputLink = document.getElementById('input-link-compartir');
+    inputLink.select();
+    navigator.clipboard.writeText(inputLink.value);
+
+    const aviso = document.getElementById('copiado-aviso');
+    aviso.style.display = 'block';
+    setTimeout(() => { aviso.style.display = 'none'; }, 3000);
+}
