@@ -14,20 +14,20 @@ document.getElementById('formNoticia').addEventListener('submit', function(e) {
     cuerpo: cuerpo
   };
 
-  // URL de tu Web App de Google Apps Script
+  // Tu nueva URL de Web App de Google Apps Script actualizada
   var urlScript = "https://script.google.com/macros/s/AKfycbwz7XfGSu11ZwkP-HZ6J7v4kxSaXcnwaYOJvW1XGT6xDRB6aZMPn6GL8VZPcNXFJgWe/exec";
 
   // Enviamos los datos mediante POST
   fetch(urlScript, {
     method: 'POST',
-    mode: 'no-cors', // Necesario para evitar bloqueos de CORS con Google Apps Script
+    mode: 'no-cors', // Evita bloqueos de CORS con Google Apps Script
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(datosNoticia)
   })
   .then(response => {
-    alert('¡Noticia enviada con éxito!');
+    alert('¡Noticia publicada con éxito!');
     document.getElementById('formNoticia').reset();
   })
   .catch(error => {
