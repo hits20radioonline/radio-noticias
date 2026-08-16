@@ -1,52 +1,18 @@
+let todasLasNoticias = []; // Variable global para guardar los datos de la API
+
 document.addEventListener("DOMContentLoaded", function () {
   const urlAPI = "https://script.google.com/macros/s/AKfycbyBguwaVlic_j1h_r7l-YDTOybxvquMy5XZXuFC0ysbHZRZR_xW3LlDuQnV7UCWlPn0/exec";
 
   fetch(urlAPI)
     .then(response => response.json())
     .then(data => {
-      const nacionales = document.getElementById('grid-nacionales');
-      const internacionales = document.getElementById('grid-internacionales');
-      const provinciales = document.getElementById('grid-provinciales');
-
-      if (nacionales) nacionales.innerHTML = '';
-      if (internacionales) internacionales.innerHTML = '';
-      if (provinciales) provinciales.innerHTML = '';
-
       if (!Array.isArray(data)) return;
+      todasLasNoticias = data; // Guardamos en la variable global
 
-      data.forEach(noticia => {
-        const categoria = (noticia.categoria || '').toLowerCase().trim();
-        let contenedor = null;
+      // Renderizamos la vista inicial por defecto
+      renderizarNoticias(todasLasNoticias);
 
-        if (categoria.includes('internacional')) {
-          contenedor = internacionales;
-        } else if (categoria.includes('nacional')) {
-          contenedor = nacionales;
-        } else if (categoria.includes('provincial')) {
-          contenedor = provinciales;
-        }
-
-        if (contenedor) {
-          const card = document.createElement('div');
-          card.className = 'card';
-          
-          let fechaTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
-
-          card.innerHTML = `
-            <img src="${noticia.imagen || ''}" alt="Imagen noticia" style="width: 100%; height: auto; display: block;">
-            <div class="card-body" style="padding: 12px;">
-              <div style="font-size: 0.75rem; color: #d9534f; font-weight: bold; margin-bottom: 6px;">${fechaTexto}</div>
-              <div class="card-title" style="font-weight: 600; font-size: 0.85rem; line-height: 1.2; height: 2.4em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: #222;">
-                ${noticia.titulo || 'Sin título'}
-              </div>
-            </div>
-          `;
-
-          card.addEventListener('click', () => abrirNoticiaModal(noticia));
-          contenedor.appendChild(card);
-        }
-      });
-
+      // Verificamos si hay un ID en la URL para abrir el modal directamente
       const urlParams = new URLSearchParams(window.location.search);
       const noticiaId = urlParams.get('id');
       if (noticiaId) {
@@ -57,7 +23,94 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => console.error('Error al conectar con la API:', error));
 });
 
-// Función de formateo blindada contra desfases de zona horaria (ej: -0416)
+// Función centralizada para renderizar con ordenamiento y filtro de 3 días
+function renderizarNoticias(listaParaPintar) {
+  const nacionales = document.getElementById('grid-nacionales');
+  const internacionales = document.getElementById('grid-internacionales');
+  const provinciales = document.getElementById('grid-provinciales');
+
+  if (nacionales) nacionales.innerHTML = '';
+  if (internacionales) internacionales.innerHTML = '';
+  if (provinciales) provinciales.innerHTML = '';
+
+  const ahora = new Date();
+  const tresDiasEnMilisegundos = 3 * 24 * 60 * 60 * 1000;
+  const terminoBusqueda = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim() : '';
+
+  // 1. Ordenar de más nueva a más vieja basándose en fecha/hora
+  let listaOrdenada = [...listaParaPintar].sort((a, b) => {
+    let fechaA = new Date(a.fecha || a.Fecha || 0);
+    let fechaB = new Date(b.fecha || b.Fecha || 0);
+    return fechaB - fechaA;
+  });
+
+  listaOrdenada.forEach(noticia => {
+    const categoria = (noticia.categoria || '').toLowerCase().trim();
+    let contenedor = null;
+
+    if (categoria.includes('internacional')) {
+      contenedor = internacionales;
+    } else if (categoria.includes('nacional')) {
+      contenedor = nacionales;
+    } else if (categoria.includes('provincial')) {
+      contenedor = provinciales;
+    }
+
+    if (contenedor) {
+      let fechaCruda = noticia.fecha || noticia.Fecha;
+      let fechaNoticia = new Date(fechaCruda || 0);
+      let diferenciaTiempo = ahora - fechaNoticia;
+      let esMasDeTresDias = diferenciaTiempo > tresDiasEnMilisegundos;
+
+      // Si supera los 3 días y el usuario NO está usando el buscador activamente, se omite de la portada
+      if (esMasDeTresDias && !terminoBusqueda) {
+        return; 
+      }
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      
+      let fechaTexto = formatearFechaYHora(fechaCruda, noticia.hora || noticia.Hora);
+
+      card.innerHTML = `
+        <img src="${noticia.imagen || ''}" alt="Imagen noticia">
+        <div class="card-body">
+          <div style="font-size: 0.75rem; color: #d9534f; font-weight: bold; margin-bottom: 6px;">${fechaTexto}</div>
+          <div class="card-title">
+            ${noticia.titulo || 'Sin título'}
+          </div>
+          <p class="card-desc">${noticia.descripcion || ''}</p>
+        </div>
+      `;
+
+      card.addEventListener('click', () => abrirNoticiaModal(noticia));
+      contenedor.appendChild(card);
+    }
+  });
+}
+
+// 4. Buscador en tiempo real que consulta sobre el total de la base de datos
+function filterNews() {
+  const inputEl = document.getElementById('searchInput');
+  if (!inputEl) return;
+  const texto = inputEl.value.toLowerCase().trim();
+
+  if (texto === "") {
+    renderizarNoticias(todasLasNoticias);
+    return;
+  }
+
+  // Filtra de forma global (incluyendo noticias de más de 3 días)
+  const resultados = todasLasNoticias.filter(noticia => 
+    (noticia.titulo && noticia.titulo.toLowerCase().includes(texto)) || 
+    (noticia.descripcion && noticia.descripcion.toLowerCase().includes(texto)) ||
+    (noticia.cuerpo && noticia.cuerpo.toLowerCase().includes(texto))
+  );
+
+  renderizarNoticias(resultados);
+}
+
+// Función de formateo blindada contra desfases de zona horaria
 function formatearFechaYHora(fechaCruda, horaCruda) {
   if (!fechaCruda) return '';
 
@@ -65,24 +118,19 @@ function formatearFechaYHora(fechaCruda, horaCruda) {
   let fechaLimpia = '';
   let horaFinal = '';
 
-  // 1. Extraer la fecha base de forma limpia (YYYY-MM-DD)
   if (fechaStr.includes('T')) {
     fechaLimpia = fechaStr.split('T')[0];
   } else {
     fechaLimpia = fechaStr.substring(0, 10);
   }
 
-  // 2. Determinar la fuente de la hora (puede venir en horaCruda o pegada en la fecha con 'T')
   let fuenteHora = horaCruda;
   if ((!fuenteHora || String(fuenteHora).trim() === '' || String(fuenteHora).trim() === 'null') && fechaStr.includes('T')) {
     fuenteHora = fechaStr.split('T')[1];
   }
 
-  // 3. Procesar y aislar la hora ignorando cualquier sufijo o código de zona extra
   if (fuenteHora !== undefined && fuenteHora !== null && String(fuenteHora).trim() !== '' && String(fuenteHora).trim() !== 'null') {
     let hStr = String(fuenteHora).trim().replace('Z', '');
-
-    // Buscar estrictamente el formato HH:MM (ej: 16:41)
     let match = hStr.match(/\d{2}:\d{2}/);
     if (match) {
       horaFinal = match[0];
