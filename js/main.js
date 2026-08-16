@@ -1,9 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const urlAPI = "https://script.google.com/macros/s/AKfycbxz4jF6gAN35Myd69T745m8KyJPIf5-Ce0oZOzRFhGpMSctFl50pb8fB1CimuuBS-6S/exec";
+  const urlAPI = "https://script.google.com/macros/s/AKfycbzYGRTbatfZiZyA9t-ypMEEDnO-kcpChIyYi_eV-lYFEeV8ziIx0cPU3pnsI_F3Hg7b/exec";
 
   fetch(urlAPI)
     .then(response => response.json())
     .then(data => {
+      console.log("Datos recibidos de Google Sheets:", data);
+
       const nacionales = document.getElementById('grid-nacionales');
       const internacionales = document.getElementById('grid-internacionales');
       const provinciales = document.getElementById('grid-provinciales');
@@ -12,19 +14,28 @@ document.addEventListener("DOMContentLoaded", function () {
       if (internacionales) internacionales.innerHTML = '';
       if (provinciales) provinciales.innerHTML = '';
 
+      if (!Array.isArray(data) || data.length === 0) {
+        console.warn("No hay noticias o el formato no es un array.");
+        return;
+      }
+
       data.forEach(noticia => {
         const categoria = (noticia.categoria || '').toLowerCase().trim();
-        let contenedor = null;
+        let contenedor = provinciales; // Por defecto a provinciales si no coincide
 
-        if (categoria.includes('nacional')) contenedor = nacionales;
-        else if (categoria.includes('internacional')) contenedor = internacionales;
-        else if (categoria.includes('provincial')) contenedor = provinciales;
+        if (categoria.includes('nacional')) {
+          contenedor = nacionales;
+        } else if (categoria.includes('internacional')) {
+          contenedor = internacionales;
+        } else if (categoria.includes('provincial')) {
+          contenedor = provinciales;
+        }
 
         if (contenedor) {
           const tarjeta = document.createElement('div');
           tarjeta.className = 'tarjeta-noticia';
           tarjeta.innerHTML = `
-            <img src="${noticia.imagen || ''}" alt="Imagen noticia">
+            <img src="${noticia.imagen || ''}" alt="Imagen noticia" onerror="this.src='https://via.placeholder.com/300'">
             <div class="contenido-tarjeta">
               <span class="fecha-tarjeta">${noticia.fecha || ''} - ${noticia.hora || ''}</span>
               <h3>${noticia.titulo || ''}</h3>
@@ -44,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (encontrada) abrirNoticiaModal(encontrada);
       }
     })
-    .catch(error => console.error('Error al cargar noticias:', error));
+    .catch(error => console.error('Error al conectar con Google Sheets:', error));
 });
 
 function abrirNoticiaModal(noticia) {
