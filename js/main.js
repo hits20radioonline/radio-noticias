@@ -40,12 +40,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           }
 
-          // TARJETA PRINCIPAL: IMAGEN, FECHA Y TÍTULO REDUCIDO A 2 LÍNEAS
+          // TARJETA PRINCIPAL CON FECHA Y HORA VISIBLES DIRECTAMENTE
           card.innerHTML = `
             <img src="${noticia.imagen || ''}" alt="Imagen noticia" style="width: 100%; height: auto; display: block;">
-            <div class="card-body" style="padding: 10px;">
-              <span class="badge" style="font-size: 0.6rem; padding: 2px 4px; margin-bottom: 5px; display: inline-block;">${fechaTexto}</span>
-              <div class="card-title" style="font-weight: 600; font-size: 0.85rem; line-height: 1.2; height: 2.4em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+            <div class="card-body" style="padding: 12px;">
+              <div style="font-size: 0.75rem; color: #d9534f; font-weight: bold; margin-bottom: 6px;">${fechaTexto}</div>
+              <div class="card-title" style="font-weight: 600; font-size: 0.85rem; line-height: 1.2; height: 2.4em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: #222;">
                 ${noticia.titulo || 'Sin título'}
               </div>
             </div>
