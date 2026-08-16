@@ -28,9 +28,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (contenedor) {
           const card = document.createElement('div');
-          card.className = 'card'; // Usa exactamente la clase de tu CSS
+          card.className = 'card';
           
-          let fechaTexto = (noticia.fecha && !noticia.fecha.includes('1899')) ? `${noticia.fecha} - ${noticia.hora || ''}` : '';
+          // Muestra la fecha y hora directamente (si existen)
+          let fechaTexto = '';
+          if (noticia.fecha) {
+            // Limpia formato de fecha largo si viene de Sheets
+            let fechaLimpia = noticia.fecha.includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
+            fechaTexto = fechaLimpia;
+            if (noticia.hora) {
+              fechaTexto += ` - ${noticia.hora}`;
+            }
+          }
 
           card.innerHTML = `
             <img src="${noticia.imagen || ''}" alt="Imagen noticia" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
@@ -41,14 +50,11 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
           `;
 
-          // Al hacer clic en la tarjeta se abre el modal de lectura
           card.addEventListener('click', () => abrirNoticiaModal(noticia));
-          
           contenedor.appendChild(card);
         }
       });
 
-      // Manejo de links compartidos por ID en la URL
       const urlParams = new URLSearchParams(window.location.search);
       const noticiaId = urlParams.get('id');
       if (noticiaId) {
