@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const card = document.createElement('div');
           card.className = 'card';
           
-          // Lógica robusta de fecha y hora
+          // Lógica robusta de fecha y hora con filtro para hora corrupta / zona horaria
           let fechaCruda = noticia.fecha || noticia.Fecha || '';
           let horaCruda = noticia.hora || noticia.Hora || '';
           let fechaTexto = '';
@@ -41,13 +41,21 @@ document.addEventListener("DOMContentLoaded", function () {
               try { fechaLimpia = new Date(fechaCruda).toISOString().split('T')[0]; } catch(e) {}
             }
             fechaTexto = fechaLimpia;
+            
             if (horaCruda) {
-              let horaLimpia = String(horaCruda);
-              if (horaLimpia.includes('T')) {
-                const partesHora = horaLimpia.split('T')[1];
-                horaLimpia = partesHora ? partesHora.substring(0, 5) : horaLimpia;
+              let horaStr = String(horaCruda).trim();
+              if (horaStr.includes('T')) {
+                horaStr = horaStr.split('T')[1].substring(0, 5);
+              } else if (horaStr.includes('GMT') || horaStr.length > 8 || horaStr.startsWith('-') || horaStr.startsWith('+')) {
+                let matchHora = horaStr.match(/\d{2}:\d{2}/);
+                horaStr = matchHora ? matchHora[0] : '';
+              } else {
+                horaStr = horaStr.substring(0, 5);
               }
-              fechaTexto += ` - ${horaLimpia}`;
+              
+              if (horaStr && !horaStr.startsWith('-')) {
+                fechaTexto += ` - ${horaStr}`;
+              }
             }
           }
 
@@ -84,23 +92,31 @@ function abrirNoticiaModal(noticia) {
 
   const elFecha = document.getElementById('modal-fecha');
   if (elFecha) {
-    // Aplicamos la misma lógica robusta en el modal
     let fechaCruda = noticia.fecha || noticia.Fecha || '';
     let horaCruda = noticia.hora || noticia.Hora || '';
     let fechaTexto = '';
+    
     if (fechaCruda) {
       let fechaLimpia = String(fechaCruda).includes('T') ? String(fechaCruda).split('T')[0] : String(fechaCruda);
       if (fechaLimpia.includes('GMT')) {
         try { fechaLimpia = new Date(fechaCruda).toISOString().split('T')[0]; } catch(e) {}
       }
       fechaTexto = fechaLimpia;
+      
       if (horaCruda) {
-        let horaLimpia = String(horaCruda);
-        if (horaLimpia.includes('T')) {
-          const partesHora = horaLimpia.split('T')[1];
-          horaLimpia = partesHora ? partesHora.substring(0, 5) : horaLimpia;
+        let horaStr = String(horaCruda).trim();
+        if (horaStr.includes('T')) {
+          horaStr = horaStr.split('T')[1].substring(0, 5);
+        } else if (horaStr.includes('GMT') || horaStr.length > 8 || horaStr.startsWith('-') || horaStr.startsWith('+')) {
+          let matchHora = horaStr.match(/\d{2}:\d{2}/);
+          horaStr = matchHora ? matchHora[0] : '';
+        } else {
+          horaStr = horaStr.substring(0, 5);
         }
-        fechaTexto += ` - ${horaLimpia}`;
+        
+        if (horaStr && !horaStr.startsWith('-')) {
+          fechaTexto += ` - ${horaStr}`;
+        }
       }
     }
     elFecha.innerText = fechaTexto;
