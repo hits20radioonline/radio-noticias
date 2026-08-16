@@ -1,4 +1,4 @@
-const urlAPI = "https://script.google.com/macros/s/AKfycbybrDtc_xXoIYgG56TflhwSpz7ijU2bhRrGQUCdH1XPV-2phGvZ5FW2XbWSPY-LKMQj/exec";
+const urlAPI = "https://script.google.com/macros/s/AKfycbyBguwaVlic_j1h_r7l-YDTOybxvquMy5XZXuFC0ysbHZRZR_xW3LlDuQnV7UCWlPn0/exec";
 
 document.addEventListener("DOMContentLoaded", function () {
     cargarNoticiasAdmin();
