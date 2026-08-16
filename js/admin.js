@@ -1,22 +1,72 @@
-document.getElementById('formNoticia').addEventListener('submit', function(e) {
-  e.preventDefault();
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Noticias</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="background: #f4f6f7;">
 
-  var datosNoticia = {
-    titulo: document.getElementById('titulo').value,
-    imagen: document.getElementById('imagen').value,
-    categoria: document.getElementById('categoria').value,
-    cuerpo: document.getElementById('cuerpo').value
-  };
+    <div class="admin-container" style="max-width: 900px; margin: 30px auto; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h2>Panel de Administración de Noticias</h2>
+        <hr style="margin-bottom: 20px;">
 
-  fetch("https://script.google.com/macros/s/AKfycbzYGRTbatfZiZyA9t-ypMEEDnO-kcpChIyYi_eV-lYFEeV8ziIx0cPU3pnsI_F3Hg7b/exec", {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(datosNoticia)
-  })
-  .then(() => {
-    alert('¡Noticia publicada con éxito!');
-    document.getElementById('formNoticia').reset();
-  })
-  .catch(err => alert('Error al enviar: ' + err));
-});
+        <!-- FORMULARIO DE CREACIÓN Y EDICIÓN -->
+        <form id="form-admin-noticia" style="background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+            <input type="hidden" id="noticia-id">
+            
+            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Título de la Noticia:</label>
+            <input type="text" id="admin-titulo" required style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
+
+            <label style="display: block; margin-bottom: 6px; font-weight: bold;">URL de la Imagen:</label>
+            <input type="url" id="admin-imagen" required style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
+
+            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Categoría:</label>
+            <select id="admin-categoria" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="provincial">Provincial</option>
+                <option value="nacional">Nacional</option>
+                <option value="internacional">Internacional</option>
+            </select>
+
+            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Cuerpo de la Noticia:</label>
+            <textarea id="admin-cuerpo" rows="5" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" id="btn-guardar" style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Publicar Noticia</button>
+                <button type="button" id="btn-cancelar-edicion" onclick="limpiarFormulario()" style="background: #7f8c8d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; display: none;">Cancelar Edición</button>
+            </div>
+        </form>
+
+        <!-- CAJA DE ENLACE LISTO PARA COPIAR A REDES -->
+        <div id="resultado-publicacion" style="display: none; margin-top: 20px; padding: 15px; background: #e9f7ef; border: 1px solid #2ecc71; border-radius: 5px;">
+            <h3 style="margin-top: 0; color: #27ae60; font-size: 1.1rem;">¡Publicación exitosa!</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 8px;">Copia este enlace para compartir en Facebook, WhatsApp u otras redes:</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="input-link-compartir" readonly style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-size: 0.85rem;">
+                <button type="button" onclick="copiarLinkNoticia()" style="background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Copiar Link</button>
+            </div>
+            <span id="copiado-aviso" style="color: #27ae60; font-size: 0.8rem; display: none; margin-top: 5px;">¡Enlace copiado al portapapeles!</span>
+        </div>
+
+        <!-- LISTADO DE GESTIÓN (EDITAR / BORRAR) -->
+        <h3 style="margin-top: 40px;">Noticias Publicadas</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
+                <thead>
+                    <tr style="background: #333; color: white; text-align: left;">
+                        <th style="padding: 10px;">Fecha</th>
+                        <th style="padding: 10px;">Título</th>
+                        <th style="padding: 10px;">Categoría</th>
+                        <th style="padding: 10px; text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-admin-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Vinculado correctamente dentro de la carpeta js/ -->
+    <script src="js/admin.js"></script>
+</body>
+</html>
