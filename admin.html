@@ -41,6 +41,17 @@
                 <input type="url" id="admin-imagen" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
 
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div style="flex: 1;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Fecha:</label>
+                    <input type="date" id="admin-fecha" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">Hora:</label>
+                    <input type="time" id="admin-hora" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+            </div>
+
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-weight: bold; margin-bottom: 5px;">Cuerpo de la Noticia:</label>
                 <textarea id="admin-cuerpo" rows="5" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
@@ -63,13 +74,13 @@
             <span id="copiado-aviso" style="color: #27ae60; font-size: 0.8rem; display: none; margin-top: 5px;">¡Enlace copiado al portapapeles!</span>
         </div>
 
-        <!-- LISTADO DE GESTIÓN (EDITAR / BORRAR) -->
-        <h3 style="margin-top: 40px; color: #1a1a1a;">Noticias Publicadas</h3>
+        <!-- LISTADO DE GESTIÓN (ÚLTIMAS 2 NOTICIAS) -->
+        <h3 style="margin-top: 40px; color: #1a1a1a;">Últimas 2 Noticias Publicadas</h3>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
                 <thead>
                     <tr style="background: #333; color: white; text-align: left;">
-                        <th style="padding: 10px;">Fecha</th>
+                        <th style="padding: 10px;">Fecha y Hora</th>
                         <th style="padding: 10px;">Título</th>
                         <th style="padding: 10px;">Categoría</th>
                         <th style="padding: 10px; text-align: center;">Acciones</th>
