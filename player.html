@@ -1,12 +1,36 @@
 <!DOCTYPE html>
-<html>
-<head><title>Radio Hits 20</title></head>
-<body style="text-align:center; padding-top:20px;">
-    <img src="logo.png" width="100">
-    <h2>Radio en Vivo</h2>
-    <!-- Aquí va el reproductor de tu emisora -->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Radio en Vivo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        h3 { margin-bottom: 10px; }
+        audio { width: 100%; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=RADIO'">
+    <h3>Hits 20 Radio</h3>
+    <p>Transmitiendo en Vivo</p>
+    
+    <!-- Cambia la URL por el stream streaming MP3/AAC de tu radio -->
     <audio controls autoplay>
-        <source src="URL_DE_TU_STREAMING" type="audio/mpeg">
+        <source src="https://stream.zeno.fm/f38d49aef58tv" type="audio/mpeg">
+        Tu navegador no soporta el reproductor.
     </audio>
 </body>
 </html>
