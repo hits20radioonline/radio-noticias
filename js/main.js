@@ -57,50 +57,55 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => console.error('Error al conectar con la API:', error));
 });
 
-// Función ultra robusta para extraer la fecha y hora sin importar cómo la envíe Google Sheets o el panel
+// Función de formateo corregida y directa para extraer la hora sin fallos
 function formatearFechaYHora(fechaCruda, horaCruda) {
   if (!fechaCruda) return '';
 
   let fechaStr = String(fechaCruda).trim();
   let fechaLimpia = '';
-  let horaFinal = '';
+  let horaExtraida = '';
 
-  // 1. Extraer la fecha limpia (YYYY-MM-DD)
+  // 1. Extraer siempre la fecha base (YYYY-MM-DD) y capturar hora potencial si viene con 'T'
   if (fechaStr.includes('T')) {
     let partes = fechaStr.split('T');
     fechaLimpia = partes[0];
-    if (!horaCruda && partes[1]) {
-      let posibleHora = partes[1].substring(0, 8); // Ej: 16:05:00
-      if (posibleHora.includes(':')) {
-        let hPartes = posibleHora.split(':');
-        horaFinal = `${hPartes[0]}:${hPartes[1]}`;
+    if (partes[1]) {
+      let posibleHora = partes[1].replace('Z', '').trim();
+      let hPartes = posibleHora.split(':');
+      if (hPartes.length >= 2) {
+        horaExtraida = `${hPartes[0]}:${hPartes[1]}`;
       }
     }
   } else {
     fechaLimpia = fechaStr.substring(0, 10);
   }
 
-  // 2. Si viene hora independiente, la procesamos de forma segura
-  if (horaCruda !== undefined && horaCruda !== null && String(horaCruda).trim() !== '') {
+  // 2. Procesar la hora independiente si existe y no está vacía
+  let horaFinal = '';
+  if (horaCruda !== undefined && horaCruda !== null && String(horaCruda).trim() !== '' && String(horaCruda).trim() !== 'null') {
     let hStr = String(horaCruda).trim();
     
     if (hStr.includes('T')) {
       let parteT = hStr.split('T')[1];
       if (parteT) {
-        let hPartes = parteT.split(':');
+        let hPartes = parteT.replace('Z', '').split(':');
         horaFinal = hPartes.length >= 2 ? `${hPartes[0]}:${hPartes[1]}` : parteT.substring(0, 5);
       }
     } else if (hStr.toLowerCase().includes('m') || hStr.includes(':')) {
-      // Soporta formatos con "a. m." / "p. m." o estándar
-      horaFinal = hStr;
+      horaFinal = hStr; // Soporta formatos como "05:10 a. m."
     } else {
       let match = hStr.match(/\d{2}:\d{2}/);
       horaFinal = match ? match[0] : '';
     }
   }
 
-  // Limpiar si hay errores de formato o signos negativos
-  if (horaFinal && (horaFinal.startsWith('-') || horaFinal.startsWith('+') || horaFinal.length > 15)) {
+  // Si la hora independiente no aportó nada válido, usamos la hora extraída de la fecha con 'T'
+  if (!horaFinal && horaExtraida) {
+    horaFinal = horaExtraida;
+  }
+
+  // Validación final para limpiar basura o errores de formato
+  if (horaFinal && (horaFinal.startsWith('-') || horaFinal.startsWith('+') || horaFinal.length > 20)) {
     horaFinal = '';
   }
 
