@@ -33,7 +33,6 @@
 
         <!-- LATERAL DERECHO -->
         <aside class="sidebar">
-            <!-- BUSCADOR DE NOTICIAS VIEJAS (ARRIBA DEL REPRODUCTOR) -->
             <div class="search-widget">
                 <input type="text" id="searchInput" placeholder="Buscar noticias..." onkeyup="filterNews()">
             </div>
@@ -54,35 +53,42 @@
                 <a href="#" target="_blank" class="social-btn yt">YouTube</a>
             </div>
 
-            <!-- 3. Espacios para Pauta / Flyer Vacíos -->
+            <!-- 3. Espacios para Pauta -->
             <div class="ads">
-                <div class="ad-slot">
-                    <p>Espacio Publicitario / Flyer 1</p>
-                </div>
-                <div class="ad-slot">
-                    <p>Espacio Publicitario / Flyer 2</p>
-                </div>
+                <div class="ad-slot"><p>Espacio Publicitario / Flyer 1</p></div>
+                <div class="ad-slot"><p>Espacio Publicitario / Flyer 2</p></div>
             </div>
 
-            <!-- 4. Botón de Inicio de Sesión para el Administrador -->
+            <!-- 4. Inicio de Sesión -->
             <div style="margin-top: 25px; text-align: center;">
-                <a href="login.html" style="background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-size: 0.95rem; font-weight: bold; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background 0.2s;">Inicio de sesión</a>
+                <a href="login.html" style="background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-size: 0.95rem; font-weight: bold; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Inicio de sesión</a>
             </div>
         </aside>
     </div>
 
-    <!-- MODAL / VENTANA PARA LEER NOTICIA COMPLETA SIN SALIR -->
+    <!-- MODAL DE NOTICIA -->
     <div id="modal-noticia" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="cerrarNoticia()">&times;</span>
             <span id="modal-categoria" class="badge"></span>
-            
-            <!-- FECHA Y HORA DE LA PUBLICACIÓN -->
             <span id="modal-fecha" style="font-size: 0.75rem; color: #d9534f; display: block; margin: 5px 0 10px 0; font-weight: bold;"></span>
-            
             <h2 id="modal-titulo"></h2>
             <img id="modal-imagen" src="" alt="">
             <p id="modal-cuerpo"></p>
+        </div>
+    </div>
+
+    <!-- REPRODUCTOR DE RADIO FLOTANTE -->
+    <div id="radio-modal-flotante" class="radio-flotante-container" style="display: none;">
+        <div class="radio-flotante-header">
+            <span>🎧 Radio en Vivo</span>
+            <span class="radio-flotante-close" onclick="cerrarPlayer()">&times;</span>
+        </div>
+        <div class="radio-flotante-body">
+            <audio id="audio-stream" controls autoplay style="width: 100%;">
+                <source src="https://stream.radiosmundiales.com/stream/claudio" type="audio/mpeg">
+                Tu navegador no soporta el elemento de audio.
+            </audio>
         </div>
     </div>
 
