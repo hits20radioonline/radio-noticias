@@ -1,92 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Noticias & Radio En Vivo</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Noticias & Radio En Vivo</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <header class="main-header">
-        <h1>Hits 20 Radio Online - Portal de Noticias</h1>
-    </header>
+    <header class="main-header">
+        <h1>Hits 20 Radio Online - Portal de Noticias</h1>
+    </header>
 
-    <div class="main-container">
-        <!-- ÁREA CENTRAL DE NOTICIAS -->
-        <main id="noticias-container">
-            <section class="categoria-section">
-                <h2>Noticias Nacionales</h2>
-                <div class="grid" id="grid-nacionales"></div>
-            </section>
+    <div class="main-container">
+        <!-- ÁREA CENTRAL DE NOTICIAS -->
+        <main id="noticias-container">
+            <section class="categoria-section">
+                <h2>Noticias Nacionales</h2>
+                <div class="grid" id="grid-nacionales"></div>
+            </section>
 
-            <section class="categoria-section">
-                <h2>Noticias Internacionales</h2>
-                <div class="grid" id="grid-internacionales"></div>
-            </section>
+            <section class="categoria-section">
+                <h2>Noticias Internacionales</h2>
+                <div class="grid" id="grid-internacionales"></div>
+            </section>
 
-            <section class="categoria-section">
-                <h2>Noticias Provinciales</h2>
-                <div class="grid" id="grid-provinciales"></div>
-            </section>
-        </main>
+            <section class="categoria-section">
+                <h2>Noticias Provinciales</h2>
+                <div class="grid" id="grid-provinciales"></div>
+            </section>
+        </main>
 
-        <!-- LATERAL DERECHO -->
-        <aside class="sidebar">
-            <!-- BUSCADOR DE NOTICIAS (FILTRA EN TIEMPO REAL) -->
-            <div class="search-widget">
-                <input type="text" id="searchInput" placeholder="Buscar noticias..." onkeyup="filterNews()">
-            </div>
+        <!-- LATERAL DERECHO -->
+        <aside class="sidebar">
+            <!-- BUSCADOR DE NOTICIAS VIEJAS (ARRIBA DEL REPRODUCTOR) -->
+            <div class="search-widget">
+                <input type="text" id="searchInput" placeholder="Buscar noticias..." onkeyup="filterNews()">
+            </div>
 
-            <!-- 1. Reproductor de Radio -->
-            <div class="radio-widget">
-                <img src="logo.png" alt="Logo Radio" class="radio-logo" onerror="this.src='https://via.placeholder.com/100?text=RADIO'">
-                <button class="btn-live" onclick="abrirPlayer()">
-                    <span class="dot"></span> Radio en Vivo
-                </button>
-            </div>
+            <!-- 1. Reproductor de Radio -->
+            <div class="radio-widget">
+                <img src="logo.png" alt="Logo Radio" class="radio-logo" onerror="this.src='https://via.placeholder.com/100?text=RADIO'">
+                <button class="btn-live" onclick="abrirPlayer()">
+                    <span class="dot"></span> Radio en Vivo
+                </button>
+            </div>
 
-            <!-- 2. Redes Sociales -->
-            <div class="social-buttons">
-                <a href="#" target="_blank" class="social-btn fb">Facebook</a>
-                <a href="#" target="_blank" class="social-btn ig">Instagram</a>
-                <a href="#" target="_blank" class="social-btn tw">X / Twitter</a>
-                <a href="#" target="_blank" class="social-btn yt">YouTube</a>
-            </div>
+            <!-- 2. Redes Sociales -->
+            <div class="social-buttons">
+                <a href="#" target="_blank" class="social-btn fb">Facebook</a>
+                <a href="#" target="_blank" class="social-btn ig">Instagram</a>
+                <a href="#" target="_blank" class="social-btn tw">X / Twitter</a>
+                <a href="#" target="_blank" class="social-btn yt">YouTube</a>
+            </div>
 
-            <!-- 3. Espacios para Pauta / Flyer Vacíos -->
-            <div class="ads">
-                <div class="ad-slot">
-                    <p>Espacio Publicitario / Flyer 1</p>
-                </div>
-                <div class="ad-slot">
-                    <p>Espacio Publicitario / Flyer 2</p>
-                </div>
-            </div>
+            <!-- 3. Espacios para Pauta / Flyer Vacíos -->
+            <div class="ads">
+                <div class="ad-slot">
+                    <p>Espacio Publicitario / Flyer 1</p>
+                </div>
+                <div class="ad-slot">
+                    <p>Espacio Publicitario / Flyer 2</p>
+                </div>
+            </div>
 
-            <!-- 4. Botón de Inicio de Sesión para el Administrador -->
-            <div style="margin-top: 25px; text-align: center;">
-                <a href="login.html" style="background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-size: 0.95rem; font-weight: bold; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background 0.2s;">Inicio de sesión</a>
-            </div>
-        </aside>
-    </div>
+            <!-- 4. Botón de Inicio de Sesión para el Administrador -->
+            <div style="margin-top: 25px; text-align: center;">
+                <a href="login.html" style="background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-size: 0.95rem; font-weight: bold; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background 0.2s;">Inicio de sesión</a>
+            </div>
+        </aside>
+    </div>
 
-    <!-- MODAL / VENTANA PARA LEER NOTICIA COMPLETA SIN SALIR -->
-    <div id="modal-noticia" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="cerrarNoticia()">&times;</span>
-            <span id="modal-categoria" class="badge"></span>
-            
-            <!-- FECHA Y HORA DE LA PUBLICACIÓN -->
-            <span id="modal-fecha" style="font-size: 0.75rem; color: #d9534f; display: block; margin: 5px 0 10px 0; font-weight: bold;"></span>
-            
-            <h2 id="modal-titulo"></h2>
-            <img id="modal-imagen" src="" alt="">
-            <p id="modal-cuerpo"></p>
-        </div>
-    </div>
+    <!-- MODAL / VENTANA PARA LEER NOTICIA COMPLETA SIN SALIR -->
+    <div id="modal-noticia" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarNoticia()">&times;</span>
+            <span id="modal-categoria" class="badge"></span>
+            
+            <!-- FECHA Y HORA DE LA PUBLICACIÓN -->
+            <span id="modal-fecha" style="font-size: 0.75rem; color: #d9534f; display: block; margin: 5px 0 10px 0; font-weight: bold;"></span>
+            
+            <h2 id="modal-titulo"></h2>
+            <img id="modal-imagen" src="" alt="">
+            <p id="modal-cuerpo"></p>
+        </div>
+    </div>
 
-    <!-- Asegúrate de que tu archivo JavaScript principal en la carpeta js sea main.js -->
-    <script src="js/main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
