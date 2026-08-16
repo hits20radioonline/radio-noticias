@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch(urlAPI)
     .then(response => response.json())
     .then(data => {
-      console.log("Datos recibidos de Google Sheets:", data);
-
       const nacionales = document.getElementById('grid-nacionales');
       const internacionales = document.getElementById('grid-internacionales');
       const provinciales = document.getElementById('grid-provinciales');
@@ -14,14 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (internacionales) internacionales.innerHTML = '';
       if (provinciales) provinciales.innerHTML = '';
 
-      if (!Array.isArray(data) || data.length === 0) {
-        console.warn("No hay noticias o el formato no es un array.");
-        return;
-      }
+      if (!Array.isArray(data)) return;
 
       data.forEach(noticia => {
         const categoria = (noticia.categoria || '').toLowerCase().trim();
-        let contenedor = provinciales; // Por defecto a provinciales si no coincide
+        let contenedor = provinciales; // Por defecto
 
         if (categoria.includes('nacional')) {
           contenedor = nacionales;
@@ -32,22 +27,28 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (contenedor) {
-          const tarjeta = document.createElement('div');
-          tarjeta.className = 'tarjeta-noticia';
-          tarjeta.innerHTML = `
-            <img src="${noticia.imagen || ''}" alt="Imagen noticia" onerror="this.src='https://via.placeholder.com/300'">
-            <div class="contenido-tarjeta">
-              <span class="fecha-tarjeta">${noticia.fecha || ''} - ${noticia.hora || ''}</span>
-              <h3>${noticia.titulo || ''}</h3>
-              <p>${(noticia.cuerpo || '').substring(0, 90)}...</p>
-              <button class="btn-leer" onclick='abrirNoticiaModal(${JSON.stringify(noticia)})'>Leer más</button>
+          const card = document.createElement('div');
+          card.className = 'card'; // Usa exactamente la clase de tu CSS
+          
+          let fechaTexto = (noticia.fecha && !noticia.fecha.includes('1899')) ? `${noticia.fecha} - ${noticia.hora || ''}` : '';
+
+          card.innerHTML = `
+            <img src="${noticia.imagen || ''}" alt="Imagen noticia" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
+            <div class="card-body">
+              <span class="badge" style="font-size: 0.65rem; padding: 2px 6px; margin-bottom: 5px; display: inline-block;">${fechaTexto}</span>
+              <div class="card-title">${noticia.titulo || ''}</div>
+              <div class="card-desc">${(noticia.cuerpo || '').substring(0, 75)}...</div>
             </div>
           `;
-          contenedor.appendChild(tarjeta);
+
+          // Al hacer clic en la tarjeta se abre el modal de lectura
+          card.addEventListener('click', () => abrirNoticiaModal(noticia));
+          
+          contenedor.appendChild(card);
         }
       });
 
-      // Manejo de links compartidos por ID
+      // Manejo de links compartidos por ID en la URL
       const urlParams = new URLSearchParams(window.location.search);
       const noticiaId = urlParams.get('id');
       if (noticiaId) {
@@ -55,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (encontrada) abrirNoticiaModal(encontrada);
       }
     })
-    .catch(error => console.error('Error al conectar con Google Sheets:', error));
+    .catch(error => console.error('Error al cargar noticias:', error));
 });
 
 function abrirNoticiaModal(noticia) {
