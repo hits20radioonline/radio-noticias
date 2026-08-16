@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       data.forEach(noticia => {
         const categoria = (noticia.categoria || '').toLowerCase().trim();
-        let contenedor = provinciales; // Por defecto
+        let contenedor = null;
 
         if (categoria.includes('nacional')) {
           contenedor = nacionales;
@@ -30,11 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
           const card = document.createElement('div');
           card.className = 'card';
           
-          // Muestra la fecha y hora directamente (si existen)
           let fechaTexto = '';
           if (noticia.fecha) {
-            // Limpia formato de fecha largo si viene de Sheets
-            let fechaLimpia = noticia.fecha.includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
+            let fechaLimpia = String(noticia.fecha).includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
             fechaTexto = fechaLimpia;
             if (noticia.hora) {
               fechaTexto += ` - ${noticia.hora}`;
@@ -42,10 +40,10 @@ document.addEventListener("DOMContentLoaded", function () {
           }
 
           card.innerHTML = `
-            <img src="${noticia.imagen || ''}" alt="Imagen noticia" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
+            <img src="${noticia.imagen || ''}" alt="Imagen noticia">
             <div class="card-body">
               <span class="badge" style="font-size: 0.65rem; padding: 2px 6px; margin-bottom: 5px; display: inline-block;">${fechaTexto}</span>
-              <div class="card-title">${noticia.titulo || ''}</div>
+              <div class="card-title">${noticia.titulo || 'Sin título'}</div>
               <div class="card-desc">${(noticia.cuerpo || '').substring(0, 75)}...</div>
             </div>
           `;
@@ -62,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (encontrada) abrirNoticiaModal(encontrada);
       }
     })
-    .catch(error => console.error('Error al cargar noticias:', error));
+    .catch(error => console.error('Error al conectar con la API:', error));
 });
 
 function abrirNoticiaModal(noticia) {
