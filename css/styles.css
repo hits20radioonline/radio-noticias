@@ -48,6 +48,7 @@ main {
     gap: 15px;
 }
 
+/* TARJETA / VENTANA DE NOTICIA CON MEDIDAS UNIFORMES */
 .card {
     background: #fff;
     border-radius: 8px;
@@ -55,6 +56,12 @@ main {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     cursor: pointer;
     transition: transform 0.2s;
+    
+    /* Altura fija para que todas las tarjetas midan exactamente lo mismo */
+    height: 340px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .card:hover {
@@ -63,24 +70,45 @@ main {
 
 .card img {
     width: 100%;
-    height: 120px;
-    object-fit: cover;
+    height: 140px; /* Altura fija para todas las imágenes de las tarjetas */
+    object-fit: cover; /* Evita que la imagen se deforme */
+    flex-shrink: 0;
 }
 
 .card-body {
-    padding: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: flex-start;
 }
 
 .card-title {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     line-height: 1.2;
+    
+    /* Control de títulos largos para evitar que desborden o estiren la tarjeta */
+    max-height: 2.4em; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .card-desc {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #666;
+    
+    /* Control de la descripción corta */
+    max-height: 2.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 /* LATERAL DERECHO */
@@ -93,6 +121,7 @@ main {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    height: fit-content;
 }
 
 /* 1. RADIO WIDGET (ARRIBA) */
@@ -136,7 +165,7 @@ main {
 /* 2. REDES SOCIALES VERTICALES (CENTRO) */
 .social-buttons {
     display: flex;
-    flex-direction: column; /* De arriba para abajo */
+    flex-direction: column;
     gap: 10px;
 }
 
@@ -223,4 +252,5 @@ main {
 @media (max-width: 768px) {
     .main-container { flex-direction: column; }
     .grid { grid-template-columns: 1fr; }
+    .card { height: auto; } /* En celulares se adapta al contenido de forma fluida */
 }
