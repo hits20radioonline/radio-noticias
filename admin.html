@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - Noticias</title>
     <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Script de Protección de Acceso -->
+    <script>
+        if (sessionStorage.getItem("auth") !== "true") {
+            const usuario = prompt("Ingrese su usuario:");
+            const clave = prompt("Ingrese su contraseña:");
+
+            // CONFIGURA TUS CREDENCIALES AQUÍ
+            if (usuario === "admin" && clave === "radio2026") {
+                sessionStorage.setItem("auth", "true");
+            } else {
+                alert("Acceso denegado. Redirigiendo a inicio.");
+                window.location.href = "index.html";
+            }
+        }
+    </script>
 </head>
 <body style="background: #f4f6f7;">
 
@@ -49,7 +65,7 @@
             <span id="copiado-aviso" style="color: #27ae60; font-size: 0.8rem; display: none; margin-top: 5px;">¡Enlace copiado al portapapeles!</span>
         </div>
 
-        <!-- LISTADO DE GESTIÓN (EDITAR / BORRAR) -->
+        <!-- LISTADO DE GESTIÓN -->
         <h3 style="margin-top: 40px;">Noticias Publicadas</h3>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
@@ -66,7 +82,6 @@
         </div>
     </div>
 
-    <!-- Vinculado correctamente dentro de la carpeta js/ -->
     <script src="js/admin.js"></script>
 </body>
 </html>
