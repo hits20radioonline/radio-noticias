@@ -19,6 +19,7 @@ async function cargarNoticiasDesdeGoogleSheets() {
 
         if (noticias.length === 0) return;
 
+        // 1. CARGAR TODAS LAS NOTICIAS EN LA PÁGINA PRINCIPAL COMO SIEMPRE
         noticias.forEach(noticia => {
             const categoria = noticia.categoria ? noticia.categoria.toLowerCase().trim() : '';
             const gridId = `grid-${categoria}`;
@@ -37,13 +38,16 @@ async function cargarNoticiasDesdeGoogleSheets() {
             }
         });
 
-        // REVISAR SI SE ABRIó DESDE UN ENLACE COMPARTIDO (URL con ?id=...)
+        // 2. SI HAY UN ID EN LA URL, ABRIR EL MODAL FLOTANTE ENCIMA DE LA PÁGINA CARGADA
         const urlParams = new URLSearchParams(window.location.search);
         const noticiaId = urlParams.get('id');
         if (noticiaId) {
             const noticiaEncontrada = noticias.find(n => String(n.id) === String(noticiaId));
             if (noticiaEncontrada) {
-                abrirNoticiaCompleta(noticiaEncontrada);
+                // Pequeño retraso para asegurar que el DOM cargó bien los elementos del modal
+                setTimeout(() => {
+                    abrirNoticiaCompleta(noticiaEncontrada);
+                }, 200);
             }
         }
 
@@ -52,6 +56,7 @@ async function cargarNoticiasDesdeGoogleSheets() {
     }
 }
 
+// Función para abrir la noticia completa en la ventana flotante (Modal)
 function abrirNoticiaCompleta(noticia) {
     document.getElementById('modal-titulo').innerText = noticia.titulo;
     document.getElementById('modal-categoria').innerText = noticia.categoria ? noticia.categoria.toUpperCase() : '';
@@ -62,6 +67,12 @@ function abrirNoticiaCompleta(noticia) {
 
 function cerrarNoticia() {
     document.getElementById('modal-noticia').style.display = 'none';
+    
+    // Opcional: Limpia el ?id= de la barra de direcciones al cerrar el modal para que quede limpia la URL
+    if (window.history.pushState) {
+        const nuevaUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.pushState({path:nuevaUrl}, '', nuevaUrl);
+    }
 }
 
 function abrirPlayer() {
