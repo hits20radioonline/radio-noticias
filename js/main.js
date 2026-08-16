@@ -148,6 +148,33 @@ function cerrarNoticia() {
   window.history.pushState({ path: window.location.pathname }, '', window.location.pathname);
 }
 
+// ==========================================
+// CONTROLADORES DEL REPRODUCTOR FLOTANTE
+// ==========================================
 function abrirPlayer() {
-  alert("Abriendo reproductor de Radio en Vivo...");
+  const playerFlotante = document.getElementById('radio-modal-flotante');
+  const audioElement = document.getElementById('audio-stream');
+
+  if (playerFlotante) {
+    playerFlotante.style.display = 'block'; // Muestra la pestaña flotante
+  }
+  
+  if (audioElement) {
+    audioElement.play().catch(error => {
+      console.log("El navegador requiere interacción para reproducir automáticamente:", error);
+    });
+  }
+}
+
+function cerrarPlayer() {
+  const playerFlotante = document.getElementById('radio-modal-flotante');
+  const audioElement = document.getElementById('audio-stream');
+
+  if (audioElement) {
+    audioElement.pause(); // Pausa la transmisión al cerrar
+  }
+
+  if (playerFlotante) {
+    playerFlotante.style.display = 'none'; // Oculta la pestaña flotante
+  }
 }
