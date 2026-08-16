@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
           const card = document.createElement('div');
           card.className = 'card';
           
-          // Lógica robusta de fecha y hora con filtro para hora corrupta / zona horaria
           let fechaCruda = noticia.fecha || noticia.Fecha || '';
           let horaCruda = noticia.hora || noticia.Hora || '';
           let fechaTexto = '';
@@ -46,6 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
               let horaStr = String(horaCruda).trim();
               if (horaStr.includes('T')) {
                 horaStr = horaStr.split('T')[1].substring(0, 5);
+              } else if (horaStr.toLowerCase().includes('m') || horaStr.includes(':')) {
+                // Mantiene el texto de la hora limpia con formato am/pm o estándar
+                horaStr = horaStr; 
               } else if (horaStr.includes('GMT') || horaStr.length > 8 || horaStr.startsWith('-') || horaStr.startsWith('+')) {
                 let matchHora = horaStr.match(/\d{2}:\d{2}/);
                 horaStr = matchHora ? matchHora[0] : '';
@@ -107,6 +109,8 @@ function abrirNoticiaModal(noticia) {
         let horaStr = String(horaCruda).trim();
         if (horaStr.includes('T')) {
           horaStr = horaStr.split('T')[1].substring(0, 5);
+        } else if (horaStr.toLowerCase().includes('m') || horaStr.includes(':')) {
+          horaStr = horaStr;
         } else if (horaStr.includes('GMT') || horaStr.length > 8 || horaStr.startsWith('-') || horaStr.startsWith('+')) {
           let matchHora = horaStr.match(/\d{2}:\d{2}/);
           horaStr = matchHora ? matchHora[0] : '';
