@@ -1,1 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio de Sesión - Administrador</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f6f9; margin: 0; }
+        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 320px; text-align: center; }
+        .login-box h2 { margin-bottom: 20px; color: #1a1a1a; font-size: 1.5rem; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #e63946; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; font-size: 1rem; margin-top: 10px; }
+        button:hover { background: #d62828; }
+        .back-link { display: block; margin-top: 15px; color: #666; font-size: 0.85rem; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Panel Administrador</h2>
+        <div class="input-group">
+            <label>Usuario</label>
+            <input type="text" id="user" placeholder="Ingresa tu usuario">
+        </div>
+        <div class="input-group">
+            <label>Contraseña</label>
+            <input type="password" id="pass" placeholder="Ingresa tu contraseña">
+        </div>
+        <button onclick="validarLogin()">Ingresar</button>
+        <a href="index.html" class="back-link">← Volver al inicio</a>
+    </div>
 
+    <script>
+        function validarLogin() {
+            const usuarioIngresado = document.getElementById('user').value;
+            const passwordIngresada = document.getElementById('pass').value;
+
+            // ⚠️ AQUÍ PUEDES CAMBIAR TU USUARIO Y CONTRASEÑA REALES ⚠️
+            const usuarioValido = "admin";
+            const passwordValida = "1234";
+
+            if (usuarioIngresado === usuarioValido && passwordIngresada === passwordValida) {
+                // Si coinciden, redirige al panel de administración que ya creamos
+                window.location.href = "admin.html";
+            } else {
+                alert("Usuario o contraseña incorrectos. Inténtalo de nuevo.");
+            }
+        }
+    </script>
+</body>
+</html>
