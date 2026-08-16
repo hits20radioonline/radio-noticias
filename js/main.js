@@ -7,12 +7,10 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.json())
     .then(data => {
       if (!Array.isArray(data)) return;
-      todasLasNoticias = data; // Guardamos en la variable global
+      todasLasNoticias = data; 
 
-      // Renderizamos la vista inicial por defecto
       renderizarNoticias(todasLasNoticias);
 
-      // Verificamos si hay un ID en la URL para abrir el modal directamente
       const urlParams = new URLSearchParams(window.location.search);
       const noticiaId = urlParams.get('id');
       if (noticiaId) {
@@ -23,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => console.error('Error al conectar con la API:', error));
 });
 
-// Función centralizada para renderizar con ordenamiento estricto y filtro de 3 días
 function renderizarNoticias(listaParaPintar) {
   const nacionales = document.getElementById('grid-nacionales');
   const internacionales = document.getElementById('grid-internacionales');
@@ -37,12 +34,20 @@ function renderizarNoticias(listaParaPintar) {
   const tresDiasEnMilisegundos = 3 * 24 * 60 * 60 * 1000;
   const terminoBusqueda = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim() : '';
 
-  // 1. Ordenar estrictamente de más nueva a más vieja usando .getTime()
+  // --- BLOQUE DE ORDENAMIENTO REFORZADO ---
   let listaOrdenada = [...listaParaPintar].sort((a, b) => {
-    let fechaA = new Date(a.fecha || a.Fecha || 0).getTime();
-    let fechaB = new Date(b.fecha || b.Fecha || 0).getTime();
-    return fechaB - fechaA; // De mayor a menor (más reciente primero)
+    let fechaA = new Date(a.fecha || a.Fecha).getTime() || 0;
+    let fechaB = new Date(b.fecha || b.Fecha).getTime() || 0;
+    
+    // Si la fecha es diferente, ordenamos por fecha
+    if (fechaB !== fechaA) return fechaB - fechaA;
+
+    // Si la fecha es igual, comparamos la hora (formato HH:MM)
+    let horaA = a.hora || a.Hora || "00:00";
+    let horaB = b.hora || b.Hora || "00:00";
+    return horaB.localeCompare(horaA);
   });
+  // ---------------------------------------
 
   listaOrdenada.forEach(noticia => {
     const categoria = (noticia.categoria || '').toLowerCase().trim();
@@ -62,10 +67,7 @@ function renderizarNoticias(listaParaPintar) {
       let diferenciaTiempo = ahora.getTime() - fechaNoticia.getTime();
       let esMasDeTresDias = diferenciaTiempo > tresDiasEnMilisegundos;
 
-      // Si supera los 3 días y el usuario NO está usando el buscador activamente, se omite de la portada
-      if (esMasDeTresDias && !terminoBusqueda) {
-        return; 
-      }
+      if (esMasDeTresDias && !terminoBusqueda) return; 
 
       const card = document.createElement('div');
       card.className = 'card';
@@ -89,7 +91,6 @@ function renderizarNoticias(listaParaPintar) {
   });
 }
 
-// 4. Buscador en tiempo real que consulta sobre el total de la base de datos
 function filterNews() {
   const inputEl = document.getElementById('searchInput');
   if (!inputEl) return;
@@ -100,7 +101,6 @@ function filterNews() {
     return;
   }
 
-  // Filtra de forma global (incluyendo noticias de más de 3 días)
   const resultados = todasLasNoticias.filter(noticia => 
     (noticia.titulo && noticia.titulo.toLowerCase().includes(texto)) || 
     (noticia.descripcion && noticia.descripcion.toLowerCase().includes(texto)) ||
@@ -110,33 +110,20 @@ function filterNews() {
   renderizarNoticias(resultados);
 }
 
-// Función de formateo blindada contra desfases de zona horaria
 function formatearFechaYHora(fechaCruda, horaCruda) {
   if (!fechaCruda) return '';
-
   let fechaStr = String(fechaCruda).trim();
-  let fechaLimpia = '';
-  let horaFinal = '';
-
-  if (fechaStr.includes('T')) {
-    fechaLimpia = fechaStr.split('T')[0];
-  } else {
-    fechaLimpia = fechaStr.substring(0, 10);
-  }
-
+  let fechaLimpia = fechaStr.includes('T') ? fechaStr.split('T')[0] : fechaStr.substring(0, 10);
+  
   let fuenteHora = horaCruda;
   if ((!fuenteHora || String(fuenteHora).trim() === '' || String(fuenteHora).trim() === 'null') && fechaStr.includes('T')) {
     fuenteHora = fechaStr.split('T')[1];
   }
 
-  if (fuenteHora !== undefined && fuenteHora !== null && String(fuenteHora).trim() !== '' && String(fuenteHora).trim() !== 'null') {
-    let hStr = String(fuenteHora).trim().replace('Z', '');
-    let match = hStr.match(/\d{2}:\d{2}/);
-    if (match) {
-      horaFinal = match[0];
-    } else if (hStr.toLowerCase().includes('m')) {
-      horaFinal = hStr;
-    }
+  let horaFinal = '';
+  if (fuenteHora && String(fuenteHora).trim() !== 'null') {
+    let match = String(fuenteHora).match(/\d{2}:\d{2}/);
+    horaFinal = match ? match[0] : String(fuenteHora).trim();
   }
 
   return horaFinal ? `${fechaLimpia} - ${horaFinal}` : fechaLimpia;
@@ -149,9 +136,7 @@ function abrirNoticiaModal(noticia) {
   document.getElementById('modal-cuerpo').innerText = noticia.cuerpo || '';
 
   const elFecha = document.getElementById('modal-fecha');
-  if (elFecha) {
-    elFecha.innerText = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
-  }
+  if (elFecha) elFecha.innerText = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
 
   document.getElementById('modal-noticia').style.display = 'flex';
   const nuevaURL = `${window.location.pathname}?id=${noticia.id}`;
