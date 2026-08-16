@@ -12,9 +12,17 @@ document.addEventListener("DOMContentLoaded", function () {
         const categoria = document.getElementById('admin-categoria').value.trim().toLowerCase();
         const cuerpo = document.getElementById('admin-cuerpo').value;
         
-        // Recogemos fecha y hora del formulario
-        const fecha = document.getElementById('admin-fecha').value;
-        const hora = document.getElementById('admin-hora').value;
+        // Recogemos fecha y hora del formulario y las limpiamos por si traen formatos ISO/T
+        let fecha = document.getElementById('admin-fecha').value;
+        let hora = document.getElementById('admin-hora').value;
+
+        if (fecha && fecha.includes('T')) {
+            fecha = fecha.split('T')[0];
+        }
+        if (hora && hora.includes('T')) {
+            const partesHora = hora.split('T')[1];
+            hora = partesHora ? partesHora.substring(0, 5) : hora;
+        }
 
         const action = id ? "update" : "create";
         const datos = { action, id, titulo, imagen, categoria, cuerpo, fecha, hora };
@@ -61,8 +69,15 @@ function cargarNoticiasAdmin() {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #ddd';
                 
-                // Formateamos para mostrar fecha y hora juntas si existen
-                const fechaHoraTexto = noticia.fecha && noticia.hora ? `${noticia.fecha} ${noticia.hora}` : (noticia.fecha || '');
+                // Limpiamos la fecha y la hora para la visualización en la tabla de administración
+                let fLimpia = noticia.fecha ? String(noticia.fecha).split('T')[0] : '';
+                let hLimpia = noticia.hora ? String(noticia.hora) : '';
+                if (hLimpia.includes('T')) {
+                    const p = hLimpia.split('T')[1];
+                    hLimpia = p ? p.substring(0, 5) : hLimpia;
+                }
+
+                const fechaHoraTexto = fLimpia && hLimpia ? `${fLimpia} - ${hLimpia}` : (fLimpia || hLimpia || 'Sin fecha');
 
                 tr.innerHTML = `
                     <td style="padding: 10px;">${fechaHoraTexto}</td>
@@ -86,10 +101,16 @@ function prepararEdicion(noticia) {
     document.getElementById('admin-cuerpo').value = noticia.cuerpo;
     
     if (noticia.fecha) {
-        document.getElementById('admin-fecha').value = noticia.fecha;
+        let f = String(noticia.fecha).split('T')[0];
+        document.getElementById('admin-fecha').value = f;
     }
     if (noticia.hora) {
-        document.getElementById('admin-hora').value = noticia.hora;
+        let h = String(noticia.hora);
+        if (h.includes('T')) {
+            const p = h.split('T')[1];
+            h = p ? p.substring(0, 5) : h;
+        }
+        document.getElementById('admin-hora').value = h;
     }
 
     document.getElementById('btn-guardar').innerText = "Actualizar Noticia";
