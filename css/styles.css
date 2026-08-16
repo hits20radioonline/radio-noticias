@@ -1,226 +1,79 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background-color: #f4f6f9;
-    color: #333;
-}
-
-.main-header {
-    background-color: #1a1a1a;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-}
-
-.main-container {
-    display: flex;
-    max-width: 1200px;
-    margin: 20px auto;
-    gap: 20px;
-    padding: 0 15px;
-}
-
-/* ÁREA PRINCIPAL */
-main {
-    flex: 3;
-}
-
-.categoria-section {
-    margin-bottom: 30px;
-}
-
-.categoria-section h2 {
-    border-bottom: 3px solid #e63946;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-    font-size: 1.4rem;
-    color: #1a1a1a;
-}
-
+/* Contenedor en cuadrícula para las 3 tarjetas por sección */
 .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
-.card {
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: transform 0.2s;
+/* Diseño de cada tarjeta individual */
+.tarjeta-noticia {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
 }
 
-.card:hover {
-    transform: translateY(-4px);
+.tarjeta-noticia:hover {
+  transform: translateY(-3px);
 }
 
-.card img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
+/* Tamaño controlado para la imagen de la tarjeta */
+.tarjeta-noticia img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
 }
 
-.card-body {
-    padding: 10px;
+/* Contenido interno de la tarjeta */
+.contenido-tarjeta {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
-.card-title {
-    font-size: 0.95rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    line-height: 1.2;
+.fecha-tarjeta {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 5px;
 }
 
-.card-desc {
-    font-size: 0.8rem;
-    color: #666;
+.tarjeta-noticia h3 {
+  font-size: 1rem;
+  color: #111;
+  margin-bottom: 8px;
+  line-height: 1.3;
 }
 
-/* LATERAL DERECHO */
-.sidebar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+.tarjeta-noticia p {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 15px;
+  flex-grow: 1;
 }
 
-/* 1. RADIO WIDGET (ARRIBA) */
-.radio-widget {
-    text-align: center;
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 8px;
-    color: white;
+.btn-leer {
+  align-self: flex-start;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 
-.radio-logo {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 10px;
+.btn-leer:hover {
+  background: #333;
 }
 
-.btn-live {
-    background: #e63946;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.dot {
-    width: 10px;
-    height: 10px;
-    background-color: #2ec4b6;
-    border-radius: 50%;
-}
-
-/* 2. REDES SOCIALES VERTICALES (CENTRO) */
-.social-buttons {
-    display: flex;
-    flex-direction: column; /* De arriba para abajo */
-    gap: 10px;
-}
-
-.social-btn {
-    text-decoration: none;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.fb { background: #1877f2; }
-.ig { background: #e4405f; }
-.tw { background: #000000; }
-.yt { background: #ff0000; }
-
-/* 3. ESPACIOS DE PAUTA (ABAJO) */
-.ads {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.ad-slot {
-    height: 150px;
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #888;
-    text-align: center;
-    padding: 10px;
-    background: #fafafa;
-}
-
-/* MODAL NOTICIA */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.modal-content img {
-    width: 100%;
-    border-radius: 8px;
-    margin: 15px 0;
-}
-
-.badge {
-    background: #e63946;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-}
-
+/* Adaptable a pantallas chicas (móviles) */
 @media (max-width: 768px) {
-    .main-container { flex-direction: column; }
-    .grid { grid-template-columns: 1fr; }
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
