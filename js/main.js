@@ -69,8 +69,22 @@ function abrirNoticiaModal(noticia) {
   document.getElementById('modal-categoria').innerText = noticia.categoria || '';
   document.getElementById('modal-titulo').innerText = noticia.titulo || '';
   document.getElementById('modal-imagen').src = noticia.imagen || '';
-  // MUESTRA TODO EL CUERPO DE LA NOTICIA EN EL MODAL FLOTANTE
   document.getElementById('modal-cuerpo').innerText = noticia.cuerpo || '';
+
+  // MUESTRA LA FECHA Y HORA EN EL MODAL FLOTANTE
+  const elFecha = document.getElementById('modal-fecha');
+  if (elFecha) {
+    let fechaTexto = '';
+    if (noticia.fecha) {
+      let fechaLimpia = String(noticia.fecha).includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
+      fechaTexto = fechaLimpia;
+      if (noticia.hora) {
+        fechaTexto += ` - ${noticia.hora}`;
+      }
+    }
+    elFecha.innerText = fechaTexto;
+  }
+
   document.getElementById('modal-noticia').style.display = 'flex';
 
   const nuevaURL = `${window.location.pathname}?id=${noticia.id}`;
