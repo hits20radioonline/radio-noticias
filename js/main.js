@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const urlAPI = "https://script.google.com/macros/s/AKfycbzYGRTbatfZiZyA9t-ypMEEDnO-kcpChIyYi_eV-lYFEeV8ziIx0cPU3pnsI_F3Hg7b/exec";
+  const urlAPI = "https://script.google.com/macros/s/AKfycbyBguwaVlic_j1h_r7l-YDTOybxvquMy5XZXuFC0ysbHZRZR_xW3LlDuQnV7UCWlPn0/exec";
 
   fetch(urlAPI)
     .then(response => response.json())
@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const categoria = (noticia.categoria || '').toLowerCase().trim();
         let contenedor = null;
 
-        // IMPORTANTE: Evaluamos "internacional" primero para que no sea interceptado por "nacional"
         if (categoria.includes('internacional')) {
           contenedor = internacionales;
         } else if (categoria.includes('nacional')) {
@@ -31,12 +30,19 @@ document.addEventListener("DOMContentLoaded", function () {
           const card = document.createElement('div');
           card.className = 'card';
           
+          // Lógica robusta de fecha y hora
+          let fechaCruda = noticia.fecha || noticia.Fecha || '';
+          let horaCruda = noticia.hora || noticia.Hora || '';
           let fechaTexto = '';
-          if (noticia.fecha) {
-            let fechaLimpia = String(noticia.fecha).includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
+          
+          if (fechaCruda) {
+            let fechaLimpia = String(fechaCruda).includes('T') ? String(fechaCruda).split('T')[0] : String(fechaCruda);
+            if (fechaLimpia.includes('GMT')) {
+              try { fechaLimpia = new Date(fechaCruda).toISOString().split('T')[0]; } catch(e) {}
+            }
             fechaTexto = fechaLimpia;
-            if (noticia.hora) {
-              let horaLimpia = String(noticia.hora);
+            if (horaCruda) {
+              let horaLimpia = String(horaCruda);
               if (horaLimpia.includes('T')) {
                 const partesHora = horaLimpia.split('T')[1];
                 horaLimpia = partesHora ? partesHora.substring(0, 5) : horaLimpia;
@@ -45,7 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           }
 
-          // TARJETA PRINCIPAL CON FECHA Y HORA VISIBLES DIRECTAMENTE
           card.innerHTML = `
             <img src="${noticia.imagen || ''}" alt="Imagen noticia" style="width: 100%; height: auto; display: block;">
             <div class="card-body" style="padding: 12px;">
@@ -77,15 +82,20 @@ function abrirNoticiaModal(noticia) {
   document.getElementById('modal-imagen').src = noticia.imagen || '';
   document.getElementById('modal-cuerpo').innerText = noticia.cuerpo || '';
 
-  // MUESTRA LA FECHA Y HORA EN EL MODAL FLOTANTE
   const elFecha = document.getElementById('modal-fecha');
   if (elFecha) {
+    // Aplicamos la misma lógica robusta en el modal
+    let fechaCruda = noticia.fecha || noticia.Fecha || '';
+    let horaCruda = noticia.hora || noticia.Hora || '';
     let fechaTexto = '';
-    if (noticia.fecha) {
-      let fechaLimpia = String(noticia.fecha).includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
+    if (fechaCruda) {
+      let fechaLimpia = String(fechaCruda).includes('T') ? String(fechaCruda).split('T')[0] : String(fechaCruda);
+      if (fechaLimpia.includes('GMT')) {
+        try { fechaLimpia = new Date(fechaCruda).toISOString().split('T')[0]; } catch(e) {}
+      }
       fechaTexto = fechaLimpia;
-      if (noticia.hora) {
-        let horaLimpia = String(noticia.hora);
+      if (horaCruda) {
+        let horaLimpia = String(horaCruda);
         if (horaLimpia.includes('T')) {
           const partesHora = horaLimpia.split('T')[1];
           horaLimpia = partesHora ? partesHora.substring(0, 5) : horaLimpia;
@@ -97,7 +107,6 @@ function abrirNoticiaModal(noticia) {
   }
 
   document.getElementById('modal-noticia').style.display = 'flex';
-
   const nuevaURL = `${window.location.pathname}?id=${noticia.id}`;
   window.history.pushState({ path: nuevaURL }, '', nuevaURL);
 }
