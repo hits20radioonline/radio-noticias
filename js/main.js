@@ -19,6 +19,7 @@ async function cargarNoticiasDesdeGoogleSheets() {
 
         if (noticias.length === 0) return;
 
+        // 1. CARGAR TODAS LAS NOTICIAS EN SUS RESPECTIVOS GRIDS
         noticias.forEach(noticia => {
             const categoria = noticia.categoria ? noticia.categoria.toLowerCase().trim() : '';
             const gridId = `grid-${categoria}`;
@@ -37,23 +38,20 @@ async function cargarNoticiasDesdeGoogleSheets() {
             }
         });
 
-        // BUSCAR LA NOTICIA POR ID O USAR LA ÚLTIMA SI COINCIDE
+        // 2. BUSCAR EXACTAMENTE LA NOTICIA QUE CORRESPONDE AL ID DE LA URL
         const urlParams = new URLSearchParams(window.location.search);
         const noticiaId = urlParams.get('id');
         
         if (noticiaId) {
-            // Buscamos sin importar si es texto o número exacto
-            let noticiaEncontrada = noticias.find(n => n.id == noticiaId);
-            
-            // Si por alguna razón el ID exacto no coincide, tomamos la última noticia subida (la más nueva)
-            if (!noticiaEncontrada && noticias.length > 0) {
-                noticiaEncontrada = noticias[noticias.length - 1];
-            }
+            // Buscamos estrictamente la noticia cuyo ID coincida con el de la URL
+            const noticiaEncontrada = noticias.find(n => String(n.id).trim() === String(noticiaId).trim());
 
             if (noticiaEncontrada) {
                 setTimeout(() => {
                     abrirNoticiaCompleta(noticiaEncontrada);
                 }, 300);
+            } else {
+                console.warn("No se encontró ninguna noticia con el ID:", noticiaId);
             }
         }
 
