@@ -52,8 +52,10 @@ body {
 .categoria-section h2 {
     font-size: 1.3rem;
     color: #1a1a1a;
-    border-left: 4px solid #d9534f; /* Línea roja vertical de separación */
-    padding-left: 10px;             /* Separación entre la línea y el texto */
+    border-left: none;                  /* Sin línea vertical lateral */
+    padding-left: 0;                    /* Sin relleno izquierdo */
+    border-bottom: 3px solid #d9534f;   /* Línea horizontal roja inferior */
+    padding-bottom: 6px;                /* Separación entre texto y línea inferior */
     margin-bottom: 15px;
 }
 
