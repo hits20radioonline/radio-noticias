@@ -1,53 +1,54 @@
-// Abrir reproductor en una ventana popup pequeña que no interrumpe la navegación
-function abrirPlayer() {
-    window.open(
-        'player.html', 
-        'RadioPlayer', 
-        'width=350,height=450,resizable=no,scrollbars=no,status=no'
-    );
-}
+// URL de tu API de Google Sheets
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwTUpXz8BqQMlX3sRcrvPIr2WAtdJ1YW4dNyYgpMSfCkWD2LugvW0iBzPmPpxs9FYyI/exec";
 
-// Cargar noticias simuladas o cargadas desde el panel de control
-document.addEventListener('DOMContentLoaded', () => {
-    cargarNoticias();
+// Función que carga las noticias al abrir la página
+document.addEventListener("DOMContentLoaded", () => {
+    cargarNoticiasDesdeGoogleSheets();
 });
 
-function cargarNoticias() {
-    // Obtener noticias del almacenamiento local (admin)
-    const noticiasGuardadas = JSON.parse(localStorage.getItem('noticias_radio')) || obtenerNoticiasDemo();
+async function cargarNoticiasDesdeGoogleSheets() {
+    try {
+        const respuesta = await fetch(SHEET_API_URL);
+        const noticias = await respuesta.json();
 
-    const secciones = ['nacionales', 'internacionales', 'provinciales'];
+        // Limpiar los contenedores por seguridad
+        document.getElementById('grid-nacionales').innerHTML = '';
+        document.getElementById('grid-internacionales').innerHTML = '';
+        document.getElementById('grid-provinciales').innerHTML = '';
 
-    secciones.forEach(sec => {
-        const contenedor = document.getElementById(`grid-${sec}`);
-        contenedor.innerHTML = '';
+        if (noticias.length === 0) {
+            document.getElementById('noticias-container').innerHTML += '<p style="text-align:center; padding:20px;">No hay noticias cargadas todavía.</p>';
+            return;
+        }
 
-        // Filtrar y tomar solo 3 noticias por sección
-        const noticiasCategoria = noticiasGuardadas
-            .filter(n => n.categoria === sec)
-            .slice(0, 3);
+        // Recorrer cada noticia de la planilla y crear su tarjeta
+        noticias.forEach(noticia => {
+            const categoria = noticia.categoria ? noticia.categoria.toLowerCase().trim() : '';
+            const gridId = `grid-${categoria}`;
+            const grid = document.getElementById(gridId);
 
-        noticiasCategoria.forEach(noticia => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = () => verNoticia(noticia);
-
-            card.innerHTML = `
-                <img src="${noticia.imagen}" alt="${noticia.titulo}" onerror="this.src='https://via.placeholder.com/300x150?text=Sin+Imagen'">
-                <div class="card-body">
-                    <div class="card-title">${noticia.titulo}</div>
-                    <div class="card-desc">${noticia.cuerpo.substring(0, 60)}...</div>
-                </div>
-            `;
-
-            contenedor.appendChild(card);
+            if (grid) {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card';
+                tarjeta.innerHTML = `
+                    <img src="${noticia.imagen}" alt="${noticia.titulo}" style="width:100%; height:140px; object-fit:cover; border-radius:4px;" onerror="this.src='https://via.placeholder.com/300x140?text=Sin+Imagen'">
+                    <h3 style="font-size:1rem; margin:10px 0 5px 0;">${noticia.titulo}</h3>
+                    <p style="font-size:0.85rem; color:#666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${noticia.cuerpo}</p>
+                    <button onclick='abrirNoticiaCompleta(${JSON.stringify(noticia)})' style="background:#e63946; color:white; border:none; padding:6px 12px; margin-top:10px; border-radius:4px; cursor:pointer; font-size:0.8rem;">Leer más</button>
+                `;
+                grid.appendChild(tarjeta);
+            }
         });
-    });
+
+    } catch (error) {
+        console.error("Error al cargar las noticias:", error);
+    }
 }
 
-function verNoticia(noticia) {
-    document.getElementById('modal-categoria').innerText = noticia.categoria;
+// Función para abrir la noticia completa en la ventana flotante (Modal)
+function abrirNoticiaCompleta(noticia) {
     document.getElementById('modal-titulo').innerText = noticia.titulo;
+    document.getElementById('modal-categoria').innerText = noticia.categoria.toUpperCase();
     document.getElementById('modal-imagen').src = noticia.imagen;
     document.getElementById('modal-cuerpo').innerText = noticia.cuerpo;
     document.getElementById('modal-noticia').style.display = 'flex';
@@ -57,17 +58,7 @@ function cerrarNoticia() {
     document.getElementById('modal-noticia').style.display = 'none';
 }
 
-// Datos de demostración iniciales para que la web nunca esté vacía
-function obtenerNoticiasDemo() {
-    return [
-        { categoria: 'nacionales', titulo: 'Noticia Nacional 1', imagen: '', cuerpo: 'Descripción detallada de la noticia nacional 1.' },
-        { categoria: 'nacionales', titulo: 'Noticia Nacional 2', imagen: '', cuerpo: 'Descripción detallada de la noticia nacional 2.' },
-        { categoria: 'nacionales', titulo: 'Noticia Nacional 3', imagen: '', cuerpo: 'Descripción detallada de la noticia nacional 3.' },
-        { categoria: 'internacionales', titulo: 'Noticia Internacional 1', imagen: '', cuerpo: 'Descripción de la noticia internacional 1.' },
-        { categoria: 'internacionales', titulo: 'Noticia Internacional 2', imagen: '', cuerpo: 'Descripción de la noticia internacional 2.' },
-        { categoria: 'internacionales', titulo: 'Noticia Internacional 3', imagen: '', cuerpo: 'Descripción de la noticia internacional 3.' },
-        { categoria: 'provinciales', titulo: 'Noticia Provincial 1', imagen: '', cuerpo: 'Descripción de la noticia provincial 1.' },
-        { categoria: 'provinciales', titulo: 'Noticia Provincial 2', imagen: '', cuerpo: 'Descripción de la noticia provincial 2.' },
-        { categoria: 'provinciales', titulo: 'Noticia Provincial 3', imagen: '', cuerpo: 'Descripción de la noticia provincial 3.' }
-    ];
+// Control del Reproductor de Radio (Abre el popup o enlace del streaming)
+function abrirPlayer() {
+    window.open('player.html', 'ReproductorRadio', 'width=400,height=500');
 }
