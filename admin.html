@@ -3,53 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Noticias</title>
+    <title>Panel de Administración - Hits 20 Radio</title>
     <link rel="stylesheet" href="css/styles.css">
-    
-    <!-- Script de Protección de Acceso -->
+
+    <!-- Script de Protección de Acceso (Usuario y Contraseña) -->
     <script>
         if (sessionStorage.getItem("auth") !== "true") {
-            const usuario = prompt("Ingrese su usuario:");
+            const usuario = prompt("Ingrese su usuario de administrador:");
             const clave = prompt("Ingrese su contraseña:");
 
-            // CONFIGURA TUS CREDENCIALES AQUÍ
+            // TUS CREDENCIALES
             if (usuario === "admin" && clave === "radio2026") {
                 sessionStorage.setItem("auth", "true");
             } else {
-                alert("Acceso denegado. Redirigiendo a inicio.");
+                alert("Acceso denegado. Redirigiendo al inicio.");
                 window.location.href = "index.html";
             }
         }
     </script>
 </head>
-<body style="background: #f4f6f7;">
+<body style="background: #f4f6f9; padding: 20px;">
 
-    <div class="admin-container" style="max-width: 900px; margin: 30px auto; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <h2>Panel de Administración de Noticias</h2>
-        <hr style="margin-bottom: 20px;">
-
+    <div class="admin-container" style="max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h2 style="border-bottom: 2px solid #e63946; padding-bottom: 10px; margin-bottom: 20px; color: #1a1a1a;">Panel de Administración de Noticias</h2>
+        
         <!-- FORMULARIO DE CREACIÓN Y EDICIÓN -->
         <form id="form-admin-noticia" style="background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
             <input type="hidden" id="noticia-id">
-            
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Título de la Noticia:</label>
-            <input type="text" id="admin-titulo" required style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
 
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">URL de la Imagen:</label>
-            <input type="url" id="admin-imagen" required style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Título de la Noticia:</label>
+                <input type="text" id="admin-titulo" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
 
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Categoría:</label>
-            <select id="admin-categoria" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="provincial">Provincial</option>
-                <option value="nacional">Nacional</option>
-                <option value="internacional">Internacional</option>
-            </select>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Categoría:</label>
+                <select id="admin-categoria" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="provincial">Provincial</option>
+                    <option value="nacional">Nacional</option>
+                    <option value="internacional">Internacional</option>
+                </select>
+            </div>
 
-            <label style="display: block; margin-bottom: 6px; font-weight: bold;">Cuerpo de la Noticia:</label>
-            <textarea id="admin-cuerpo" rows="5" required style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">URL de la Imagen:</label>
+                <input type="url" id="admin-imagen" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Cuerpo de la Noticia:</label>
+                <textarea id="admin-cuerpo" rows="5" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+            </div>
 
             <div style="display: flex; gap: 10px;">
-                <button type="submit" id="btn-guardar" style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Publicar Noticia</button>
+                <button type="submit" id="btn-guardar" style="background: #e63946; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; flex: 1;">Publicar Noticia</button>
                 <button type="button" id="btn-cancelar-edicion" onclick="limpiarFormulario()" style="background: #7f8c8d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; display: none;">Cancelar Edición</button>
             </div>
         </form>
@@ -65,8 +72,8 @@
             <span id="copiado-aviso" style="color: #27ae60; font-size: 0.8rem; display: none; margin-top: 5px;">¡Enlace copiado al portapapeles!</span>
         </div>
 
-        <!-- LISTADO DE GESTIÓN -->
-        <h3 style="margin-top: 40px;">Noticias Publicadas</h3>
+        <!-- LISTADO DE GESTIÓN (EDITAR / BORRAR) -->
+        <h3 style="margin-top: 40px; color: #1a1a1a;">Noticias Publicadas</h3>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
                 <thead>
@@ -80,8 +87,13 @@
                 <tbody id="lista-admin-body"></tbody>
             </table>
         </div>
+        
+        <div style="margin-top: 25px; text-align: center;">
+            <a href="index.html" style="color: #1a1a1a; text-decoration: none; font-size: 0.9rem; font-weight: bold;">← Volver al Portal</a>
+        </div>
     </div>
 
+    <!-- Vinculado a tu script de administración -->
     <script src="js/admin.js"></script>
 </body>
 </html>
