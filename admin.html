@@ -6,19 +6,10 @@
     <title>Panel de Administración - Hits 20 Radio</title>
     <link rel="stylesheet" href="css/styles.css">
 
-    <!-- Script de Protección de Acceso (Usuario y Contraseña) -->
+    <!-- Verificación limpia de sesión -->
     <script>
         if (sessionStorage.getItem("auth") !== "true") {
-            const usuario = prompt("Ingrese su usuario de administrador:");
-            const clave = prompt("Ingrese su contraseña:");
-
-            // TUS CREDENCIALES
-            if (usuario === "admin" && clave === "radio2026") {
-                sessionStorage.setItem("auth", "true");
-            } else {
-                alert("Acceso denegado. Redirigiendo al inicio.");
-                window.location.href = "index.html";
-            }
+            window.location.href = "login.html";
         }
     </script>
 </head>
@@ -88,8 +79,9 @@
             </table>
         </div>
         
-        <div style="margin-top: 25px; text-align: center;">
+        <div style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
             <a href="index.html" style="color: #1a1a1a; text-decoration: none; font-size: 0.9rem; font-weight: bold;">← Volver al Portal</a>
+            <a href="#" onclick="sessionStorage.clear(); window.location.href='login.html';" style="color: #e63946; text-decoration: none; font-size: 0.9rem; font-weight: bold;">Cerrar Sesión</a>
         </div>
     </div>
 
