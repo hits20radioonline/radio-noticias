@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => console.error('Error al conectar con la API:', error));
 });
 
-// Función unificada para procesar fecha y hora correctamente sin importar de dónde provengan
+// Función ultra robusta para extraer la fecha y hora sin importar cómo la envíe Google Sheets o el panel
 function formatearFechaYHora(fechaCruda, horaCruda) {
   if (!fechaCruda) return '';
 
@@ -65,36 +65,42 @@ function formatearFechaYHora(fechaCruda, horaCruda) {
   let fechaLimpia = '';
   let horaFinal = '';
 
-  // 1. Extraer la fecha limpia y rescatar hora si viene pegada con 'T'
+  // 1. Extraer la fecha limpia (YYYY-MM-DD)
   if (fechaStr.includes('T')) {
-    fechaLimpia = fechaStr.split('T')[0];
-    if (!horaCruda) {
-      let posibleHora = fechaStr.split('T')[1];
-      if (posibleHora) {
-        // Extraemos hora y minuto (ej: 16:30)
-        horaFinal = posibleHora.substring(0, 5);
+    let partes = fechaStr.split('T');
+    fechaLimpia = partes[0];
+    if (!horaCruda && partes[1]) {
+      let posibleHora = partes[1].substring(0, 8); // Ej: 16:05:00
+      if (posibleHora.includes(':')) {
+        let hPartes = posibleHora.split(':');
+        horaFinal = `${hPartes[0]}:${hPartes[1]}`;
       }
     }
   } else {
     fechaLimpia = fechaStr.substring(0, 10);
   }
 
-  // 2. Procesar la hora independiente si se proveyó
-  if (horaCruda) {
+  // 2. Si viene hora independiente, la procesamos de forma segura
+  if (horaCruda !== undefined && horaCruda !== null && String(horaCruda).trim() !== '') {
     let hStr = String(horaCruda).trim();
+    
     if (hStr.includes('T')) {
       let parteT = hStr.split('T')[1];
-      horaFinal = parteT ? parteT.substring(0, 5) : '';
+      if (parteT) {
+        let hPartes = parteT.split(':');
+        horaFinal = hPartes.length >= 2 ? `${hPartes[0]}:${hPartes[1]}` : parteT.substring(0, 5);
+      }
     } else if (hStr.toLowerCase().includes('m') || hStr.includes(':')) {
-      horaFinal = hStr; // Soporta formatos con am/pm o estándar
+      // Soporta formatos con "a. m." / "p. m." o estándar
+      horaFinal = hStr;
     } else {
       let match = hStr.match(/\d{2}:\d{2}/);
-      horaFinal = match ? match[0] : hStr.substring(0, 5);
+      horaFinal = match ? match[0] : '';
     }
   }
 
-  // Filtrar valores de hora corruptos o con signos no válidos
-  if (horaFinal && (horaFinal.startsWith('-') || horaFinal.startsWith('+') || horaFinal.length > 12)) {
+  // Limpiar si hay errores de formato o signos negativos
+  if (horaFinal && (horaFinal.startsWith('-') || horaFinal.startsWith('+') || horaFinal.length > 15)) {
     horaFinal = '';
   }
 
