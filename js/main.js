@@ -1,7 +1,5 @@
-// URL de tu API de Google Sheets ACTUALIZADA
 const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz_GDQj0KkYaiI6o5g0EHFgrlzI9wvmXdqQmhIAk8IHfyzXS-sQO9YqH3ybxNHojoi8/exec";
 
-// Función que carga las noticias al abrir la página
 document.addEventListener("DOMContentLoaded", () => {
     cargarNoticiasDesdeGoogleSheets();
 });
@@ -11,7 +9,6 @@ async function cargarNoticiasDesdeGoogleSheets() {
         const respuesta = await fetch(SHEET_API_URL);
         const noticias = await respuesta.json();
 
-        // Limpiar los contenedores por seguridad
         const gridNacionales = document.getElementById('grid-nacionales');
         const gridInternacionales = document.getElementById('grid-internacionales');
         const gridProvinciales = document.getElementById('grid-provinciales');
@@ -20,12 +17,8 @@ async function cargarNoticiasDesdeGoogleSheets() {
         if (gridInternacionales) gridInternacionales.innerHTML = '';
         if (gridProvinciales) gridProvinciales.innerHTML = '';
 
-        if (noticias.length === 0) {
-            console.log("No hay noticias cargadas todavía.");
-            return;
-        }
+        if (noticias.length === 0) return;
 
-        // Recorrer cada noticia de la planilla y crear su tarjeta
         noticias.forEach(noticia => {
             const categoria = noticia.categoria ? noticia.categoria.toLowerCase().trim() : '';
             const gridId = `grid-${categoria}`;
@@ -44,12 +37,21 @@ async function cargarNoticiasDesdeGoogleSheets() {
             }
         });
 
+        // REVISAR SI SE ABRIó DESDE UN ENLACE COMPARTIDO (URL con ?id=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const noticiaId = urlParams.get('id');
+        if (noticiaId) {
+            const noticiaEncontrada = noticias.find(n => String(n.id) === String(noticiaId));
+            if (noticiaEncontrada) {
+                abrirNoticiaCompleta(noticiaEncontrada);
+            }
+        }
+
     } catch (error) {
         console.error("Error al cargar las noticias:", error);
     }
 }
 
-// Función para abrir la noticia completa en la ventana flotante (Modal)
 function abrirNoticiaCompleta(noticia) {
     document.getElementById('modal-titulo').innerText = noticia.titulo;
     document.getElementById('modal-categoria').innerText = noticia.categoria ? noticia.categoria.toUpperCase() : '';
@@ -62,7 +64,6 @@ function cerrarNoticia() {
     document.getElementById('modal-noticia').style.display = 'none';
 }
 
-// Control del Reproductor de Radio
 function abrirPlayer() {
     window.open('player.html', 'ReproductorRadio', 'width=400,height=500');
 }
