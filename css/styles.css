@@ -52,10 +52,10 @@ body {
 .categoria-section h2 {
     font-size: 1.3rem;
     color: #1a1a1a;
-    border-left: none;                  /* Sin línea vertical lateral */
-    padding-left: 0;                    /* Sin relleno izquierdo */
+    border-left: none;                    /* Sin línea vertical lateral */
+    padding-left: 0;                      /* Sin relleno izquierdo */
     border-bottom: 3px solid #d9534f;   /* Línea horizontal roja inferior */
-    padding-bottom: 6px;                /* Separación entre texto y línea inferior */
+    padding-bottom: 6px;                  /* Separación entre texto y línea inferior */
     margin-bottom: 15px;
 }
 
@@ -312,6 +312,57 @@ body {
     color: #444;
 }
 
+/* ==========================================
+   ESTILOS DEL REPRODUCTOR DE RADIO FLOTANTE
+   ========================================== */
+.radio-flotante-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    z-index: 2000;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.radio-flotante-header {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border-bottom: 3px solid #d9534f;
+}
+
+.radio-flotante-close {
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: #aaa;
+    line-height: 1;
+}
+
+.radio-flotante-close:hover {
+    color: #fff;
+}
+
+.radio-flotante-body {
+    padding: 15px;
+    background: #f9f9f9;
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* Diseño Adaptativo (Responsive para Celulares y Tablets) */
 @media (max-width: 900px) {
     .main-container {
@@ -319,5 +370,11 @@ body {
     }
     .sidebar {
         width: 100%;
+    }
+    .radio-flotante-container {
+        width: calc(100% - 30px);
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
     }
 }
