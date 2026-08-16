@@ -1,17 +1,19 @@
 document.getElementById('formNoticia').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  // Recolectamos los datos del formulario
-  var titulo = document.getElementById('titulo').value;
-  var imagen = document.getElementById('imagen').value;
-  var categoria = document.getElementById('categoria').value;
-  var cuerpo = document.getElementById('cuerpo').value;
+  // Obtenemos fecha y hora actual en formato local
+  var ahora = new Date();
+  var fechaActual = ahora.toLocaleDateString('es-AR');
+  var horaActual = ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
+  // Recolectamos los datos del formulario incluyendo fecha y hora
   var datosNoticia = {
-    titulo: titulo,
-    imagen: imagen,
-    categoria: categoria,
-    cuerpo: cuerpo
+    titulo: document.getElementById('titulo').value,
+    imagen: document.getElementById('imagen').value,
+    categoria: document.getElementById('categoria').value,
+    cuerpo: document.getElementById('cuerpo').value,
+    fecha: fechaActual,
+    hora: horaActual
   };
 
   // Tu nueva URL de Web App de Google Apps Script actualizada
