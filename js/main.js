@@ -36,7 +36,12 @@ document.addEventListener("DOMContentLoaded", function () {
             let fechaLimpia = String(noticia.fecha).includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
             fechaTexto = fechaLimpia;
             if (noticia.hora) {
-              fechaTexto += ` - ${noticia.hora}`;
+              let horaLimpia = String(noticia.hora);
+              if (horaLimpia.includes('T')) {
+                const partesHora = horaLimpia.split('T')[1];
+                horaLimpia = partesHora ? partesHora.substring(0, 5) : horaLimpia;
+              }
+              fechaTexto += ` - ${horaLimpia}`;
             }
           }
 
@@ -80,7 +85,12 @@ function abrirNoticiaModal(noticia) {
       let fechaLimpia = String(noticia.fecha).includes('T') ? noticia.fecha.split('T')[0] : noticia.fecha;
       fechaTexto = fechaLimpia;
       if (noticia.hora) {
-        fechaTexto += ` - ${noticia.hora}`;
+        let horaLimpia = String(noticia.hora);
+        if (horaLimpia.includes('T')) {
+          const partesHora = horaLimpia.split('T')[1];
+          horaLimpia = partesHora ? partesHora.substring(0, 5) : horaLimpia;
+        }
+        fechaTexto += ` - ${horaLimpia}`;
       }
     }
     elFecha.innerText = fechaTexto;
