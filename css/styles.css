@@ -79,19 +79,47 @@ body {
     opacity: 0.9;
 }
 
-.header-social-btn img {
-    width: 38px;  /* Ancho equilibrado para mantener la elegancia */
-    height: 38px; /* Alto equilibrado */
-    object-fit: contain;
-    margin-bottom: 4px;
-    border-radius: 50%; /* Bordes perfectamente redondeados */
-}
-
 .header-social-btn span {
     color: #ffffff;
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.3px;
+    margin-top: 4px;
+}
+
+/* Contenedor de iconos vectoriales estilo app móvil */
+.social-icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px; /* Esquinas redondeadas idénticas a las capturas */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.social-icon-box svg {
+    width: 24px;
+    height: 24px;
+    fill: #ffffff;
+}
+
+/* Colores de fondo y degradados oficiales de las redes */
+.fb-bg { 
+    background-color: #1877f2; 
+}
+
+.ig-bg { 
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #df4996 45%, #a51b85 60%, #3a559f 90%); 
+}
+
+.threads-bg { 
+    background-color: #000000; 
+    border: 1px solid #333; 
+}
+
+.yt-bg { 
+    background-color: #ff0000; 
 }
 
 /* Contenedor Principal (Layout de dos columnas) */
