@@ -5,6 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Noticias & Radio En Vivo</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos para la barra de clima en vivo */
+        .weather-ticker-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-bottom: 2px solid #d9534f;
+            padding: 10px 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .weather-ticker-title {
+            color: #d9534f;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .weather-ticker-scroll {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: #d9534f transparent;
+        }
+        .weather-ticker-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .weather-ticker-scroll::-webkit-scrollbar-thumb {
+            background: #d9534f;
+            border-radius: 4px;
+        }
+        .weather-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .weather-item span {
+            font-weight: bold;
+            color: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
 
@@ -56,6 +110,17 @@
     <div class="main-container">
         <!-- ÁREA CENTRAL DE NOTICIAS -->
         <main id="noticias-container">
+            
+            <!-- WIDGET DE CLIMA EN VIVO UBICADO ARRIBA DE NOTICIAS NACIONALES -->
+            <div class="weather-ticker-container">
+                <div class="weather-ticker-title">
+                    <span>🌡️ Estado del Clima en la Provincia de San Luis</span>
+                </div>
+                <div class="weather-ticker-scroll" id="weather-ticker">
+                    <div class="weather-item">Cargando clima...</div>
+                </div>
+            </div>
+
             <section class="categoria-section">
                 <h2>Noticias Nacionales</h2>
                 <div class="grid" id="grid-nacionales"></div>
@@ -127,6 +192,57 @@
             </audio>
         </div>
     </div>
+
+    <!-- SCRIPT PARA CARGAR EL CLIMA DESDE LA API -->
+    <script>
+        const apiKey = 'e275965fe86eeeabba320d7b99bb4faf';
+        const cities = [
+            "San Luis", 
+            "Villa Mercedes", 
+            "Merlo", 
+            "La Punta", 
+            "Juana Koslay", 
+            "El Volcan", 
+            "El Trapiche", 
+            "La Florida"
+        ];
+
+        async function loadWeather() {
+            const tickerContainer = document.getElementById('weather-ticker');
+            tickerContainer.innerHTML = '';
+
+            for (const city of cities) {
+                try {
+                    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},AR&units=metric&lang=es&appid=${apiKey}`);
+                    if (!response.ok) continue;
+                    const data = await response.json();
+                    
+                    const temp = Math.round(data.main.temp);
+                    const description = data.weather[0].description;
+                    
+                    // Mapeo básico de íconos según el estado del clima
+                    let icon = '🌡️';
+                    const id = data.weather[0].id;
+                    if (id >= 200 && id < 300) icon = '⛈️';
+                    else if (id >= 300 && id < 600) icon = '🌧️';
+                    else if (id >= 600 && id < 700) icon = '❄️';
+                    else if (id >= 700 && id < 800) icon = '🌫️';
+                    else if (id === 800) icon = '☀️';
+                    else if (id > 800) icon = '☁️';
+
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'weather-item';
+                    itemDiv.innerHTML = `${city}: <span>${temp}°C</span> ${icon}`;
+                    tickerContainer.appendChild(itemDiv);
+                } catch (error) {
+                    console.error(`Error cargando clima para ${city}:`, error);
+                }
+            }
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener('DOMContentLoaded', loadWeather);
+    </script>
 
     <script src="js/main.js"></script>
 </body>
