@@ -33,9 +33,15 @@ body {
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
+    justify-content: space-between; /* Distribuye espacio entre el lado izquierdo y las redes sociales */
     width: 100%;
+}
+
+/* Contenedor Izquierdo: Logo y Título */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 .header-logo {
@@ -51,6 +57,41 @@ body {
     font-size: 2.2rem;
     letter-spacing: 0.8px;
     font-weight: 700;
+}
+
+/* Estilos para las Redes Sociales en la Cabecera */
+.header-socials {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaciado equilibrado entre cada botón social */
+}
+
+.header-social-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.header-social-btn:hover {
+    transform: translateY(-3px);
+    opacity: 0.9;
+}
+
+.header-social-btn img {
+    width: 38px;  /* Ancho equilibrado para mantener la elegancia */
+    height: 38px; /* Alto equilibrado */
+    object-fit: contain;
+    margin-bottom: 4px;
+    border-radius: 50%; /* Bordes perfectamente redondeados */
+}
+
+.header-social-btn span {
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 /* Contenedor Principal (Layout de dos columnas) */
@@ -215,33 +256,6 @@ body {
     50% { transform: scale(1.3); opacity: 0.5; }
     100% { transform: scale(0.95); opacity: 1; }
 }
-
-/* Botones de Redes Sociales */
-.social-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.social-btn {
-    padding: 10px 15px;
-    border-radius: 6px;
-    color: white;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-    transition: opacity 0.2s;
-}
-
-.social-btn:hover {
-    opacity: 0.9;
-}
-
-.social-btn.fb { background-color: #3b5998; }
-.social-btn.ig { background-color: #e1306c; }
-.social-btn.tw { background-color: #1da1f2; }
-.social-btn.yt { background-color: #ff0000; }
 
 /* Espacios Publicitarios / Flyers */
 .ads {
@@ -410,12 +424,21 @@ body {
         flex-direction: column;
         text-align: center;
         justify-content: center;
-        gap: 6px;
+        gap: 15px;
+        padding: 15px 0;
+    }
+    .header-left {
+        flex-direction: column;
+        gap: 10px;
     }
     .header-logo {
         height: 100px; /* Logo más pequeño en vistas móviles */
     }
     .main-header h1 {
         font-size: 1.5rem;
+    }
+    .header-socials {
+        justify-content: center;
+        margin-top: 5px;
     }
 }
