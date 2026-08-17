@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Noticias & Radio En Vivo</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos rápidos para el widget de clima integrado en el header */
+        .header-weather {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .weather-city {
+            text-align: center;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+        .weather-city span {
+            display: block;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        @media (max-width: 1024px) {
+            .header-weather {
+                display: none; /* Se oculta en pantallas pequeñas para no saturar el header */
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -16,6 +43,25 @@
                 <h1>Portal de Noticias</h1>
             </div>
 
+            <!-- Centro: Datos del tiempo en San Luis (Capital, Villa Mercedes, Merlo) -->
+            <div class="header-weather">
+                <div class="weather-city">
+                    San Luis Capital
+                    <span>18°C ☀️</span>
+                </div>
+                <div style="width: 1px; height: 25px; background: rgba(255,255,255,0.2);"></div>
+                <div class="weather-city">
+                    Villa Mercedes
+                    <span>19°C 🌤️</span>
+                </div>
+                <div style="width: 1px; height: 25px; background: rgba(255,255,255,0.2);"></div>
+                <div class="weather-city">
+                    Merlo
+                    <span>16°C ☀️</span>
+                </div>
+            </div>
+
+            <!-- Derecha: Redes Sociales -->
             <div class="header-socials">
                 <!-- Facebook -->
                 <a href="https://www.facebook.com/hits20radio/" target="_blank" class="header-social-btn">
