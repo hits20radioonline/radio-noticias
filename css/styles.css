@@ -9,9 +9,12 @@
 }
 
 body {
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
+            background-color: #f4f6f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 5px; /* Achica los márgenes exteriores del body */
 }
 
 /* Cabecera Principal - Espacio máximo aprovechado */
