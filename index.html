@@ -6,6 +6,20 @@
     <title>Portal de Noticias & Radio En Vivo</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
+        /* Ajuste general para ocupar el 95% del ancho y eliminar márgenes excesivos */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .main-header, .main-container {
+            width: 95% !important;
+            max-width: 95% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
         /* Estilos para la barra de clima en vivo */
         .weather-ticker-container {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
@@ -14,6 +28,8 @@
             margin-bottom: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
         }
         .weather-ticker-title {
             color: #d9534f;
@@ -63,7 +79,7 @@
 <body>
 
     <header class="main-header">
-        <div class="header-content">
+        <div class="header-content" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
             <!-- Izquierda: Logo achicado y Título -->
             <div class="header-left">
                 <img src="logo.png" alt="Logo Hits 20" class="header-logo" onerror="this.style.display='none'">
@@ -107,9 +123,9 @@
         </div>
     </header>
 
-    <div class="main-container">
+    <div class="main-container" style="display: flex; gap: 20px; box-sizing: border-box;">
         <!-- ÁREA CENTRAL DE NOTICIAS -->
-        <main id="noticias-container">
+        <main id="noticias-container" style="flex: 1; min-width: 0;">
             
             <!-- WIDGET DE CLIMA EN VIVO UBICADO ARRIBA DE NOTICIAS NACIONALES -->
             <div class="weather-ticker-container">
@@ -138,7 +154,7 @@
         </main>
 
         <!-- LATERAL DERECHO -->
-        <aside class="sidebar">
+        <aside class="sidebar" style="width: 300px; flex-shrink: 0;">
             <div class="search-widget">
                 <input type="text" id="searchInput" placeholder="Buscar noticias..." onkeyup="filterNews()">
             </div>
