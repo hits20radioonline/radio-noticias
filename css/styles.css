@@ -20,7 +20,7 @@ body {
 .main-header {
     background-color: #1a1a1a;
     color: #ffffff;
-    padding: 0 30px; /* Margen vertical eliminado */
+    padding: 0 30px;
     border-bottom: 4px solid #d9534f;
     text-align: left;
     display: flex;
@@ -39,11 +39,11 @@ body {
 }
 
 .header-logo {
-    height: 190px; /* Tamaño del logo */
+    height: 230px; /* Logo más grande (ampliado desde 190px) */
     width: auto;
     object-fit: contain;
-    display: block; /* Elimina espacios de línea base */
-    margin: 0;      /* Sin márgenes compensatorios */
+    display: block; 
+    margin: 0;      
     padding: 0;
 }
 
@@ -413,7 +413,7 @@ body {
         gap: 6px;
     }
     .header-logo {
-        height: 140px;
+        height: 160px; /* Logo también adaptado para pantallas móviles */
     }
     .main-header h1 {
         font-size: 1.5rem;
