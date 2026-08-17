@@ -16,13 +16,14 @@ body {
     min-height: 100vh;
 }
 
-/* Cabecera Principal - Ajustada al mínimo */
+/* Cabecera Principal - Espacio vertical totalmente optimizado */
 .main-header {
     background-color: #1a1a1a;
     color: #ffffff;
-    padding: 2px 30px; /* Margen superior e inferior mínimo */
+    padding: 0 30px; /* Margen superior e inferior cero */
     border-bottom: 4px solid #d9534f;
     text-align: left;
+    height: auto;
 }
 
 .header-content {
@@ -38,7 +39,8 @@ body {
     height: 190px; /* Logo maximizado */
     width: auto;
     object-fit: contain;
-    margin: -5px 0; /* Compensación para ajustar al borde */
+    display: block; /* Elimina espacios residuales e inferiores de línea */
+    margin: 0;
 }
 
 .main-header h1 {
@@ -398,7 +400,8 @@ body {
 
 @media (max-width: 768px) {
     .main-header {
-        padding: 2px 15px; /* Mínimo en móviles */
+        padding: 0 15px; /* Margen vertical cero en móviles */
+        text-align: center;
     }
     .header-content {
         flex-direction: column;
@@ -407,12 +410,9 @@ body {
         gap: 6px;
     }
     .header-logo {
-        height: 140px; /* Logo grande en móviles */
+        height: 140px; /* Logo adaptado en móviles */
     }
     .main-header h1 {
         font-size: 1.5rem;
-    }
-    .main-header {
-        text-align: center;
     }
 }
