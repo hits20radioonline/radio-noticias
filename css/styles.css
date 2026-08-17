@@ -20,7 +20,7 @@ body {
 .main-header {
     background-color: #1a1a1a;
     color: #ffffff;
-    padding: 15px 30px;
+    padding: 8px 30px; /* Margen superior e inferior reducido a 8px */
     border-bottom: 4px solid #d9534f;
     text-align: left;
 }
@@ -31,11 +31,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 25px;
+    gap: 20px;
 }
 
 .header-logo {
-    height: 150px; /* Logo extra grande en escritorio */
+    height: 180px; /* Logo maximizado en escritorio */
     width: auto;
     object-fit: contain;
 }
@@ -396,17 +396,20 @@ body {
 }
 
 @media (max-width: 768px) {
+    .main-header {
+        padding: 6px 15px; /* Menos margen en celulares */
+    }
     .header-content {
         flex-direction: column;
         text-align: center;
         justify-content: center;
-        gap: 10px;
+        gap: 6px;
     }
     .header-logo {
-        height: 110px; /* Logo grande adaptado para celulares */
+        height: 130px; /* Logo más grande también en móviles */
     }
     .main-header h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
     }
     .main-header {
         text-align: center;
