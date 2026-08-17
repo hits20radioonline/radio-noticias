@@ -58,6 +58,11 @@
             font-weight: bold;
             color: #f0f0f0;
         }
+        /* Contenedor del contador */
+        .flag-counter-container {
+            margin-top: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -129,12 +134,21 @@
             <div class="search-widget">
                 <input type="text" id="searchInput" placeholder="Buscar noticias..." onkeyup="filterNews()">
             </div>
+            
             <div class="radio-widget">
                 <img src="logo.png" alt="Logo Radio" class="radio-logo" onerror="this.src='https://via.placeholder.com/100?text=RADIO'">
                 <button class="btn-live" onclick="abrirPlayer()">
-                    <span class="dot"></span> Radio en Vivo
+                    <span class="dot"></span> EN VIVO
                 </button>
+                
+                <!-- Widget del contador integrado -->
+                <div class="flag-counter-container">
+                    <a href="https://info.flagcounter.com/S36N">
+                        <img src="https://s01.flagcounter.com/count/S36N/bg_FFFFFF/txt_000000/border_CCCCCC/columns_4/maxflags_12/viewers_Visitantes/labels_0/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0">
+                    </a>
+                </div>
             </div>
+            
             <div class="ads">
                 <div class="ad-slot"><p>Espacio Publicitario / Flyer 1</p></div>
                 <div class="ad-slot"><p>Espacio Publicitario / Flyer 2</p></div>
@@ -145,7 +159,7 @@
         </aside>
     </div>
 
-    <!-- Modales y Scripts se mantienen igual -->
+    <!-- Modales y Scripts -->
     <div id="modal-noticia" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="cerrarNoticia()">&times;</span>
