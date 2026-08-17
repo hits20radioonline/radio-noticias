@@ -35,7 +35,7 @@ body {
 }
 
 .header-logo {
-    height: 130px; /* Logo más grande en escritorio */
+    height: 150px; /* Logo extra grande en escritorio */
     width: auto;
     object-fit: contain;
 }
@@ -403,7 +403,7 @@ body {
         gap: 10px;
     }
     .header-logo {
-        height: 95px; /* Logo más grande también adaptado para celulares */
+        height: 110px; /* Logo grande adaptado para celulares */
     }
     .main-header h1 {
         font-size: 1.6rem;
