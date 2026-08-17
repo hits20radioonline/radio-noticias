@@ -9,12 +9,7 @@
 }
 
 .body {
-            background-color: #f4f6f9;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 5px; /* Achica los márgenes exteriores del body */
+    margin: 10px; /* Reduce los márgenes por defecto del navegador (que suelen ser de 8px o más, o amplíalos si usas contenedores centrados) */
 }
 
 /* Cabecera Principal - Espacio máximo aprovechado */
@@ -36,6 +31,8 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+   max-width: 100%; /* Permite que se expanda más en pantallas grandes */
+    padding: 0 10px; /* Reduce el espacio a los laterales (ajusta a 5px o 0 si deseas pegarlo más) */
 }
 
 /* Contenedor Izquierdo: Logo y Título */
