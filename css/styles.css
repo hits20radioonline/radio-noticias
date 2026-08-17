@@ -59,7 +59,7 @@ body {
     font-weight: 700;
 }
 
-/* Estilos para las Redes Sociales en la Cabecera (Sello de Agua) */
+/* Estilos para las Redes Sociales en la Cabecera (Sello de Agua Corregido) */
 .header-socials {
     display: flex;
     align-items: center;
@@ -105,41 +105,46 @@ body {
     transition: all 0.3s ease;
 }
 
-.social-icon-box svg {
+/* Forzamos color blanco puro y opacidad de sello de agua, eliminando cualquier azul */
+.social-icon-box svg,
+.social-icon-box svg path {
     width: 24px;
     height: 24px;
-    fill: #ffffff;
+    fill: #ffffff !important;
+    color: #ffffff !important;
     opacity: 0.5;
     transition: all 0.3s ease;
 }
 
 /* Efectos al pasar el cursor: Colores corporativos originales independientes */
 .header-social-btn:hover .fb-water { 
-    background-color: #0866ff; /* Azul oficial actual de Facebook */
+    background-color: #0866ff; 
     border-color: #0866ff;
     box-shadow: 0 0 12px rgba(8, 102, 255, 0.5);
 }
 
 .header-social-btn:hover .ig-water { 
-    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #df4996 45%, #a51b85 60%, #3a559f 90%); /* Degradado original Instagram */
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #df4996 45%, #a51b85 60%, #3a559f 90%); 
     border-color: transparent;
     box-shadow: 0 0 12px rgba(223, 73, 150, 0.5);
 }
 
 .header-social-btn:hover .threads-water { 
-    background-color: #000000; /* Fondo negro original de Threads */
+    background-color: #000000; 
     border-color: #555;
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
 }
 
 .header-social-btn:hover .yt-water { 
-    background-color: #ff0000; /* Rojo original de YouTube */
+    background-color: #ff0000; 
     border-color: #ff0000;
     box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
 }
 
-.header-social-btn:hover .social-icon-box svg {
-    opacity: 1;
+.header-social-btn:hover .social-icon-box svg,
+.header-social-btn:hover .social-icon-box svg path {
+    opacity: 1 !important;
+    fill: #ffffff !important;
 }
 
 /* Contenedor Principal (Layout de dos columnas) */
