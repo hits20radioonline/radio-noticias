@@ -39,7 +39,7 @@ body {
 }
 
 .header-logo {
-    height: 230px; /* Logo más grande (ampliado desde 190px) */
+    height: 130px; /* Logo achicado (ajustado a una medida más contenida) */
     width: auto;
     object-fit: contain;
     display: block; 
@@ -413,7 +413,7 @@ body {
         gap: 6px;
     }
     .header-logo {
-        height: 160px; /* Logo también adaptado para pantallas móviles */
+        height: 100px; /* Logo más pequeño en vistas móviles */
     }
     .main-header h1 {
         font-size: 1.5rem;
