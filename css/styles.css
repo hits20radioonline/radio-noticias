@@ -33,7 +33,7 @@ body {
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Distribuye espacio entre el lado izquierdo y las redes sociales */
+    justify-content: space-between;
     width: 100%;
 }
 
@@ -45,7 +45,7 @@ body {
 }
 
 .header-logo {
-    height: 130px; /* Logo achicado (ajustado a una medida más contenida) */
+    height: 130px;
     width: auto;
     object-fit: contain;
     display: block; 
@@ -59,11 +59,11 @@ body {
     font-weight: 700;
 }
 
-/* Estilos para las Redes Sociales en la Cabecera (Efecto Sello de Agua) */
+/* Estilos para las Redes Sociales en la Cabecera */
 .header-socials {
     display: flex;
     align-items: center;
-    gap: 15px; /* Espaciado equilibrado entre cada botón social */
+    gap: 15px;
 }
 
 .header-social-btn {
@@ -96,7 +96,7 @@ body {
 .social-icon-box {
     width: 42px;
     height: 42px;
-    border-radius: 12px; /* Esquinas redondeadas estilo app móvil */
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -105,19 +105,21 @@ body {
     transition: all 0.3s ease;
 }
 
-.social-icon-box svg {
+.social-icon-box svg,
+.social-icon-box svg path {
     width: 24px;
     height: 24px;
-    fill: #ffffff;
-    opacity: 0.5; /* Efecto translúcido de sello de agua */
+    fill: #ffffff !important;
+    color: #ffffff !important;
+    opacity: 0.5;
     transition: all 0.3s ease;
 }
 
-/* Efectos al pasar el cursor: Revelan colores y brillos originales */
+/* Efectos al pasar el cursor: Colores corporativos originales independientes */
 .header-social-btn:hover .fb-water { 
-    background-color: #1877f2; 
-    border-color: #1877f2;
-    box-shadow: 0 0 12px rgba(24, 119, 242, 0.5);
+    background-color: #0866ff; 
+    border-color: #0866ff;
+    box-shadow: 0 0 12px rgba(8, 102, 255, 0.5);
 }
 
 .header-social-btn:hover .ig-water { 
@@ -138,8 +140,10 @@ body {
     box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
 }
 
-.header-social-btn:hover .social-icon-box svg {
-    opacity: 1; /* Recuperan su opacidad completa */
+.header-social-btn:hover .social-icon-box svg,
+.header-social-btn:hover .social-icon-box svg path {
+    opacity: 1 !important;
+    fill: #ffffff !important;
 }
 
 /* Contenedor Principal (Layout de dos columnas) */
@@ -480,7 +484,7 @@ body {
         gap: 10px;
     }
     .header-logo {
-        height: 100px; /* Logo más pequeño en vistas móviles */
+        height: 100px;
     }
     .main-header h1 {
         font-size: 1.5rem;
