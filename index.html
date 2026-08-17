@@ -202,9 +202,7 @@
             "Merlo", 
             "La Punta", 
             "Juana Koslay", 
-            "El Volcan", 
-            "El Trapiche", 
-            "La Florida"
+            "El Trapiche"
         ];
 
         async function loadWeather() {
@@ -218,9 +216,7 @@
                     const data = await response.json();
                     
                     const temp = Math.round(data.main.temp);
-                    const description = data.weather[0].description;
                     
-                    // Mapeo básico de íconos según el estado del clima
                     let icon = '🌡️';
                     const id = data.weather[0].id;
                     if (id >= 200 && id < 300) icon = '⛈️';
@@ -240,7 +236,6 @@
             }
         }
 
-        // Ejecutar al cargar la página
         document.addEventListener('DOMContentLoaded', loadWeather);
     </script>
 
