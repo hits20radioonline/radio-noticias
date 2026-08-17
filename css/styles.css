@@ -9,7 +9,9 @@
 }
 
 body {
-            margin: 0 15px; /* Margen superior/inferior 0, laterales 15px */
+            width: 95%;
+            max-width: 95%;
+            margin: 0 auto;
             padding: 0;
             box-sizing: border-box;
 }
