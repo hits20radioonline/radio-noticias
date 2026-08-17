@@ -9,11 +9,9 @@
 }
 
 body {
-    background-color: #f4f6f9;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+            margin: 0 15px; /* Margen superior/inferior 0, laterales 15px */
+            padding: 0;
+            box-sizing: border-box;
 }
 
 /* Cabecera Principal - Espacio máximo aprovechado */
