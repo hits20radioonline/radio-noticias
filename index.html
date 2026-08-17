@@ -16,7 +16,6 @@
                 <h1>Portal de Noticias</h1>
             </div>
 
-            <!-- Derecha: Redes Sociales -->
             <div class="header-socials">
                 <!-- Facebook -->
                 <a href="https://www.facebook.com/hits20radio/" target="_blank" class="header-social-btn">
@@ -113,14 +112,11 @@
 
     <!-- REPRODUCTOR DE RADIO FLOTANTE -->
     <div id="radio-modal-flotante" class="radio-flotante-container" style="display: none;">
-        <div class="radio-flotante-header" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #1a1a1a; color: #fff;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <img src="logo.png" alt="Logo" style="width: 30px; height: 30px; object-fit: contain; border-radius: 4px;">
-                <span style="font-weight: bold;">Radio en Vivo</span>
-            </div>
-            <span class="radio-flotante-close" onclick="cerrarPlayer()" style="cursor: pointer; font-size: 1.2rem;">&times;</span>
+        <div class="radio-flotante-header">
+            <span>?? Radio en Vivo</span>
+            <span class="radio-flotante-close" onclick="cerrarPlayer()">&times;</span>
         </div>
-        <div class="radio-flotante-body" style="padding: 15px;">
+        <div class="radio-flotante-body">
             <audio id="audio-stream" controls autoplay style="width: 100%;">
                 <source src="https://stream.radiosmundiales.com/stream/claudio" type="audio/mpeg">
                 Tu navegador no soporta el elemento de audio.
