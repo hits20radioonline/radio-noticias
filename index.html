@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Portal de Noticias & Radio En Vivo</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="manifest" href="/manifest.json">
@@ -275,7 +275,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- SCRIPT PARA CARGAR EL CLIMA PRINCIPAL Y ARRASTRE -->
     <script>
         const apiKey = 'e275965fe86eeeabba320d7b99bb4faf';
@@ -329,7 +329,7 @@
         headerDrag.addEventListener('mousedown', (e) => {
             isDragging = true;
             offsetX = e.clientX - modalFlotante.offsetLeft;
-            offsetY = e.clientY - modalFlontante.offsetTop;
+            offsetY = e.clientY - modalFlotante.offsetTop;
         });
 
         document.addEventListener('mousemove', (e) => {
