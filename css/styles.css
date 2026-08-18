@@ -625,6 +625,23 @@ body {
     width: 100%;
 }
 
+/* Ajustes específicos para el panel de administración en móviles */
+@media (max-width: 600px) {
+    .admin-container {
+        padding: 15px !important;
+        margin: 10px !important;
+        width: auto !important;
+    }
+
+    form#form-admin-noticia {
+        padding: 15px !important;
+    }
+
+    input, select, textarea {
+        font-size: 16px !important; /* Evita el zoom automático en iOS */
+    }
+}
+
 /* Diseño Adaptativo (Responsive para Celulares y Tablets) */
 @media (max-width: 900px) {
     .main-container, .header-content {
