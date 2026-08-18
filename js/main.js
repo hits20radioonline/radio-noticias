@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
     .catch(error => console.error('Error al conectar con la API:', error));
+
+  // Inicializar la funcionalidad de arrastrar el reproductor flotante
+  inicializarArrastrePlayer();
 });
 
 function renderizarNoticias(listaParaPintar) {
@@ -194,6 +197,83 @@ function cambiarVolumen(valor) {
   if (volumeValue) {
     volumeValue.innerText = valor;
   }
+}
+
+// ==========================================
+// LÓGICA DE ARRASTRE (DRAG & DROP) DEL REPRODUCTOR
+// ==========================================
+function inicializarArrastrePlayer() {
+  const player = document.getElementById('radio-modal-flotante');
+  const header = document.getElementById('radio-header-drag');
+
+  if (!player || !header) return;
+
+  let isDragging = false;
+  let startX, startY, initialX, initialY;
+
+  function dragStart(e) {
+    // Evitar arrastre si se hace clic en el botón de cerrar
+    if (e.target.classList.contains('radio-flotante-close')) return;
+
+    isDragging = true;
+    
+    // Obtener la posición inicial (ya sea táctil o de mouse)
+    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+    startX = clientX;
+    startY = clientY;
+
+    const rect = player.getBoundingClientRect();
+    initialX = rect.left;
+    initialY = rect.top;
+
+    // Cambiar posicionamiento a pixels fijos absolutos para permitir movimiento libre
+    player.style.left = initialX + 'px';
+    player.style.top = initialY + 'px';
+    player.style.bottom = 'auto';
+    player.style.right = 'auto';
+
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', dragEnd);
+  }
+
+  function drag(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+
+    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+
+    let newX = initialX + dx;
+    let newY = initialY + dy;
+
+    // Restringir dentro de los límites de la ventana del navegador
+    const maxX = window.innerWidth - player.offsetWidth;
+    const maxY = window.innerHeight - player.offsetHeight;
+
+    newX = Math.max(0, Math.min(newX, maxX));
+    newY = Math.max(0, Math.min(newY, maxY));
+
+    player.style.left = newX + 'px';
+    player.style.top = newY + 'px';
+  }
+
+  function dragEnd() {
+    isDragging = false;
+    document.removeEventListener('mousemove', drag);
+    document.removeEventListener('mouseup', dragEnd);
+    document.removeEventListener('touchmove', drag);
+    document.removeEventListener('touchend', dragEnd);
+  }
+
+  header.addEventListener('mousedown', dragStart);
+  header.addEventListener('touchstart', dragStart, { passive: false });
 }
 
 // ==========================================
