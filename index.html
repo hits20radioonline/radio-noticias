@@ -58,6 +58,30 @@
             font-weight: bold;
             color: #f0f0f0;
         }
+
+        /* Estilos del reproductor flotante arrastrable */
+        #radio-modal-flotante {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 280px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 9999;
+            overflow: hidden;
+        }
+        #radio-header-drag {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: #1a1a1a;
+            color: #fff;
+            cursor: move;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -183,8 +207,8 @@
     </div>
 
     <!-- REPRODUCTOR DE RADIO FLOTANTE -->
-    <div id="radio-modal-flotante" class="radio-flotante-container" style="display: none;">
-        <div class="radio-flotante-header" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #1a1a1a; color: #fff;">
+    <div id="radio-modal-flotante">
+        <div id="radio-header-drag">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <img src="logo.png" alt="Logo" style="width: 30px; height: 30px; object-fit: contain; border-radius: 4px;">
                 <span style="font-weight: bold;">Radio en Vivo</span>
@@ -219,7 +243,7 @@
         </div>
     </div>
     
-    <!-- SCRIPT PARA CARGAR EL CLIMA PRINCIPAL -->
+    <!-- SCRIPT PARA CARGAR EL CLIMA PRINCIPAL Y ARRASTRE -->
     <script>
         const apiKey = 'e275965fe86eeeabba320d7b99bb4faf';
         const cities = [
@@ -263,6 +287,30 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadWeather);
+
+        // LÓGICA DE ARRASTRE PARA EL REPRODUCTOR FLOTANTE
+        const modalFlotante = document.getElementById('radio-modal-flotante');
+        const headerDrag = document.getElementById('radio-header-drag');
+        let isDragging = false, offsetX, offsetY;
+
+        headerDrag.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - modalFlotante.offsetLeft;
+            offsetY = e.clientY - modalFlotante.offsetTop;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                modalFlotante.style.left = (e.clientX - offsetX) + 'px';
+                modalFlotante.style.top = (e.clientY - offsetY) + 'px';
+                modalFlotante.style.bottom = 'auto'; 
+                modalFlotante.style.right = 'auto';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
     </script>
 
     <script src="js/main.js"></script>
