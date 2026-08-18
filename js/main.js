@@ -164,18 +164,12 @@ function abrirNoticiaModal(noticia) {
   document.getElementById('modal-titulo').innerText = noticia.titulo || '';
   document.getElementById('modal-cuerpo').innerText = noticia.cuerpo || '';
 
-  // Contenedor multimedia del modal (asegúrate de que en tu HTML el modal soporte esto, o aplicamos dinámicamente)
   const modalImagenElem = document.getElementById('modal-imagen');
   if (modalImagenElem) {
-    // Verificamos si existe un contenedor para video en el modal o reemplazamos el src de la imagen por el reproductor multimedia
     let multimediaModalHtml = obtenerHtmlMultimedia(noticia.video || noticia.Video, noticia.imagen || noticia.Imagen);
     
-    // Si el elemento modal-imagen es una etiqueta IMG, la envolvemos o reemplazamos su contenedor padre si es necesario, 
-    // o simplemente actualizamos el contenido si adaptamos el modal. 
-    // Para mantener compatibilidad estricta con tu estructura actual:
     if (modalImagenElem.tagName === 'IMG') {
       if (noticia.video && noticia.video.trim() !== "") {
-        // Si hay video y el elemento es IMG, creamos dinámicamente un contenedor de video si no existe
         let parentModalImg = modalImagenElem.parentNode;
         let videoContainerModal = document.getElementById('modal-video-container');
         if (!videoContainerModal) {
