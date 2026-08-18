@@ -111,12 +111,12 @@
         <!-- ÁREA CENTRAL DE NOTICIAS -->
         <main id="noticias-container">
             
-            <!-- WIDGET DE CLIMA EN VIVO UBICADO ARRIBA DE NOTICIAS NACIONALES -->
+            <!-- WIDGET DE CLIMA EN VIVO CON BOTÓN OTRAS LOC -->
             <div class="weather-ticker-container">
                 <div class="weather-ticker-title" style="display: flex; justify-content: space-between; align-items: center;">
-    <span>🌡️ Estado del Clima en la Provincia de San Luis</span>
-    <button onclick="abrirModalOtrasLoc()" class="btn-otras-loc">Otras Loc</button>
-</div>
+                    <span>🌡️ Estado del Clima en la Provincia de San Luis</span>
+                    <button onclick="abrirModalOtrasLoc()" class="btn-otras-loc">Otras Loc</button>
+                </div>
                 <div class="weather-ticker-scroll" id="weather-ticker">
                     <div class="weather-item">Cargando clima...</div>
                 </div>
@@ -152,11 +152,11 @@
                 </button>
             </div>
 
-                <!-- Código de Google Apps Script insertado abajo de radio en vivo -->
-                <div style="margin-top: 15px; text-align: center;">
-                    <iframe src="https://saultula.github.io/contador/widget.html?id=Portal%20de%20Noticias%20Hits20&t=1787017616957" width="240" height="270" frameborder="0" scrolling="no" style="border:none; overflow:hidden;"></iframe>
-                </div>
-            
+            <!-- Contador -->
+            <div style="margin-top: 15px; text-align: center;">
+                <iframe src="https://saultula.github.io/contador/widget.html?id=Portal%20de%20Noticias%20Hits20&t=1787017616957" width="240" height="270" frameborder="0" scrolling="no" style="border:none; overflow:hidden;"></iframe>
+            </div>
+        
             <!-- 2. Espacios para Pauta -->
             <div class="ads">
                 <div class="ad-slot"><p>Espacio Publicitario / Flyer 1</p></div>
@@ -198,8 +198,23 @@
             </audio>
         </div>
     </div>
+
+    <!-- VENTANA FLOTANTE PARA OTRAS LOCALIDADES -->
+    <div id="modal-otras-loc" class="modal-loc-container" style="display: none;">
+        <div class="modal-loc-content">
+            <div class="modal-loc-header">
+                <h3>Clima - Más Localidades de San Luis</h3>
+                <span class="modal-loc-close" onclick="cerrarModalOtrasLoc()">&times;</span>
+            </div>
+            <div class="modal-loc-body">
+                <div class="modal-loc-grid" id="grid-otras-loc">
+                    <div class="weather-item">Cargando localidades...</div>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <!-- SCRIPT PARA CARGAR EL CLIMA DESDE LA API -->
+    <!-- SCRIPT PARA CARGAR EL CLIMA PRINCIPAL -->
     <script>
         const apiKey = 'e275965fe86eeeabba320d7b99bb4faf';
         const cities = [
