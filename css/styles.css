@@ -389,6 +389,19 @@ body {
     padding: 10px;
 }
 
+/* ==========================================
+   ESTILOS PARA PWA Y BOTÓN DE INSTALACIÓN
+   ========================================== */
+#btn-instalar {
+    transition: all 0.3s ease;
+}
+
+#btn-instalar:hover {
+    background-color: #c9302c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+}
+
 /* Modal / Ventana Emergente de Noticia */
 .modal {
     display: none;
@@ -653,5 +666,13 @@ body {
     .header-socials {
         justify-content: center;
         margin-top: 5px;
+    }
+    .sidebar {
+        padding: 10px;
+    }
+    #btn-instalar, 
+    .sidebar a[href="login.html"] {
+        font-size: 1rem;
+        padding: 14px;
     }
 }
