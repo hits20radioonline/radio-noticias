@@ -198,7 +198,6 @@ function cerrarModalOtrasLoc() {
 }
 
 function cargarOtrasLocalidadesClima() {
-  // Apuntamos al ID correcto que existe en tu HTML: 'grid-otras-loc'
   const gridContainer = document.getElementById('grid-otras-loc');
   if (!gridContainer) return;
 
@@ -213,7 +212,6 @@ function cargarOtrasLocalidadesClima() {
     { nombre: 'San Francisco', lat: -32.5833, lon: -65.9500 },
     { nombre: 'Concarán', lat: -32.5599, lon: -65.2531 },
     { nombre: 'Quines', lat: -32.2333, lon: -65.8833 },
-    { nombre: 'Villa de la Paz', lat: -32.4167, lon: -65.0500 },
     { nombre: 'Naschel', lat: -32.9167, lon: -65.3833 },
     { nombre: 'Beazley', lat: -33.6000, lon: -66.7833 },
     { nombre: 'Tilisarao', lat: -32.7667, lon: -65.2000 }
