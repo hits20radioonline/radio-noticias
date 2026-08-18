@@ -221,18 +221,21 @@ function cargarOtrasLocalidadesClima() {
     localidades.map(loc => 
       fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`)
         .then(res => res.json())
-        .then(data => ({
-          nombre: loc.nombre,
-          temp: data.current_weather ? Math.round(data.current_weather.temperature) : '--'
-        }))
-        .catch(() => ({ nombre: loc.nombre, temp: '--' }))
+        .then(data => {
+          const temp = data.current_weather ? Math.round(data.current_weather.temperature) : '--';
+          // Asigna sol si la temperatura es mayor a 22°C, o nube en caso contrario
+          const icono = temp !== '--' && temp > 22 ? '☀️' : '☁️';
+          return { nombre: loc.nombre, temp, icono };
+        })
+        .catch(() => ({ nombre: loc.nombre, temp: '--', icono: '☁️' }))
     )
   ).then(resultados => {
     gridContainer.innerHTML = '';
     resultados.forEach(item => {
       const div = document.createElement('div');
       div.className = 'weather-item';
-      div.innerHTML = `<span>${item.nombre}</span>: <strong>${item.temp}°C</strong>`;
+      // Muestra el nombre, la temperatura y el icono gráfico integrado
+      div.innerHTML = `<span>${item.nombre}:</span> <strong>${item.temp}°C ${item.icono}</strong>`;
       gridContainer.appendChild(div);
     });
   });
