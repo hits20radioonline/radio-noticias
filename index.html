@@ -201,115 +201,49 @@
     <!-- SCRIPT PARA CARGAR EL CLIMA DESDE LA API -->
     <script>
         const apiKey = 'e275965fe86eeeabba320d7b99bb4faf';
-        const principalCities = ["San Luis", "Villa Mercedes", "Merlo", "La Punta", "Juana Koslay", "El Trapiche"];
-
-        const allLocalidades = [
-            "Potrero de los Funes", "El Trapiche", "El Volcán", "La Carolina", "San Francisco del Monte de Oro", 
-            "Quines", "Concarán", "Cortaderas", "Carpintería", "Buena Esperanza", "Nogolí", "Candelaria", 
-            "San Martín", "Luján", "Balde", "La Toma", "Naschel", "Tilisarao", "Alto Pelado", "Alto Pencoso", 
-            "Anchorena", "Arizona", "Bagual", "Batavia", "Beazley", "Cazador", "Chosmes", "Daniel Donovan", 
-            "Desaguadero", "El Milagro", "Estancia Grande", "Fortín El Patria", "Fortuna", "Fraga", "Jarilla", 
-            "Juan Jorba", "Juan Llerena", "Juan Wenceslao Gez", "La Calera", "Lafinur", "La Florida", "La Majada", 
-            "La Maroma", "La Punilla", "Las Aguadas", "Las Barranquitas", "Las Chacras", "Las Lagunas", "Lavaisse", 
-            "La Vertiente", "Leandro N. Alem", "Los Cajones", "Los Manantiales", "Los Molles", "Los Overos", 
-            "Los Puquios", "Martín de Loyola", "Mosmota", "Nación Ranquel", "Nahuel Mapá", "Navia", "Nueva Galia", 
-            "Papagayos", "Paso de las Carretas", "Paso Grande", "Potrerillo", "Renca", "Riocito", "Río Juan Gómez", 
-            "Saladillo", "Salinas del Bebedero", "San Jerónimo", "San José del Morro", "San Pablo", 
-            "Santa Rosa del Conlara", "Suyuque Nuevo", "Talita", "Unión", "Villa de la Quebrada", "Villa del Carmen", 
-            "Villa de Praga", "Villa Larca", "Villa Reynolds", "Villa Salles", "Zanjitas"
+        const cities = [
+            "San Luis", 
+            "Villa Mercedes", 
+            "Merlo", 
+            "La Punta", 
+            "Juana Koslay", 
+            "El Trapiche"
         ];
 
         async function loadWeather() {
             const tickerContainer = document.getElementById('weather-ticker');
             tickerContainer.innerHTML = '';
-            for (const city of principalCities) {
+
+            for (const city of cities) {
                 try {
                     const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},AR&units=metric&lang=es&appid=${apiKey}`);
                     if (!response.ok) continue;
                     const data = await response.json();
+                    
                     const temp = Math.round(data.main.temp);
-                    let icon = '☀️';
+                    
+                    let icon = '🌡️';
                     const id = data.weather[0].id;
                     if (id >= 200 && id < 300) icon = '⛈️';
                     else if (id >= 300 && id < 600) icon = '🌧️';
                     else if (id >= 600 && id < 700) icon = '❄️';
+                    else if (id >= 700 && id < 800) icon = '🌫️';
+                    else if (id === 800) icon = '☀️';
                     else if (id > 800) icon = '☁️';
 
                     const itemDiv = document.createElement('div');
                     itemDiv.className = 'weather-item';
                     itemDiv.innerHTML = `${city}: <span>${temp}°C</span> ${icon}`;
                     tickerContainer.appendChild(itemDiv);
-                } catch (e) { console.error(e); }
-            }
-        }
-
-        let localidadesLoaded = false;
-        async function abrirOtrasLoc() {
-            document.getElementById('modal-otras-loc').style.display = 'flex';
-            if (!localidadesLoaded) {
-                await loadAllLocalidadesWeather();
-                localidadesLoaded = true;
-            }
-        }
-
-        function cerrarOtrasLoc() {
-            document.getElementById('modal-otras-loc').style.display = 'none';
-        }
-
-        async function loadAllLocalidadesWeather() {
-            const gridContainer = document.getElementById('modal-loc-grid');
-            gridContainer.innerHTML = '';
-
-            for (const loc of allLocalidades) {
-                const card = document.createElement('div');
-                card.className = 'loc-weather-card';
-                card.dataset.name = loc.toLowerCase();
-                card.innerHTML = `
-                    <span class="loc-name">${loc}</span>
-                    <span class="loc-data" id="loc-w-${loc.replace(/\s+/g, '-')}">--°C</span>
-                `;
-                gridContainer.appendChild(card);
-            }
-
-            for (const loc of allLocalidades) {
-                try {
-                    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${loc},AR&units=metric&lang=es&appid=${apiKey}`);
-                    if (!response.ok) continue;
-                    const data = await response.json();
-                    const temp = Math.round(data.main.temp);
-                    let icon = '☀️';
-                    const id = data.weather[0].id;
-                    if (id >= 200 && id < 300) icon = '⛈️';
-                    else if (id >= 300 && id < 600) icon = '🌧️';
-                    else if (id >= 600 && id < 700) icon = '❄️';
-                    else if (id > 800) icon = '☁️';
-
-                    const el = document.getElementById(`loc-w-${loc.replace(/\s+/g, '-')}`);
-                    if (el) {
-                        el.innerHTML = `${temp}°C ${icon}`;
-                    }
-                } catch (e) {
-                    const el = document.getElementById(`loc-w-${loc.replace(/\s+/g, '-')}`);
-                    if (el) el.innerHTML = 'N/D';
+                } catch (error) {
+                    console.error(`Error cargando clima para ${city}:`, error);
                 }
             }
-        }
-
-        function filterLocalidades() {
-            const query = document.getElementById('searchLocInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.loc-weather-card');
-            cards.forEach(card => {
-                const name = card.dataset.name;
-                if (name.includes(query)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
         }
 
         document.addEventListener('DOMContentLoaded', loadWeather);
     </script>
+
     <script src="js/main.js"></script>
 </body>
 </html>
