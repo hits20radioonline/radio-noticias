@@ -198,10 +198,11 @@ function cerrarModalOtrasLoc() {
 }
 
 function cargarOtrasLocalidadesClima() {
-  const gridContainer = document.getElementById('modal-loc-grid-container');
+  // Apuntamos al ID correcto que existe en tu HTML: 'grid-otras-loc'
+  const gridContainer = document.getElementById('grid-otras-loc');
   if (!gridContainer) return;
 
-  gridContainer.innerHTML = '<div style="color: #aaa; text-align: center; grid-column: 1 / -1; padding: 20px;">Cargando localidades...</div>';
+  gridContainer.innerHTML = '<div class="weather-item">Cargando localidades...</div>';
 
   const localidades = [
     { nombre: 'San Luis', lat: -33.3017, lon: -66.3378 },
@@ -233,7 +234,7 @@ function cargarOtrasLocalidadesClima() {
     resultados.forEach(item => {
       const div = document.createElement('div');
       div.className = 'weather-item';
-      div.innerHTML = `<span>${item.nombre}</span><strong>${item.temp}°C</strong>`;
+      div.innerHTML = `<span>${item.nombre}</span>: <strong>${item.temp}°C</strong>`;
       gridContainer.appendChild(div);
     });
   });
