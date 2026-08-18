@@ -156,7 +156,7 @@ function abrirPlayer() {
   const audioElement = document.getElementById('audio-stream');
 
   if (playerFlotante) {
-    playerFlotante.style.display = 'block'; // Muestra la pestaña flotante
+    playerFlotante.style.display = 'block'; 
   }
   
   if (audioElement) {
@@ -171,21 +171,22 @@ function cerrarPlayer() {
   const audioElement = document.getElementById('audio-stream');
 
   if (audioElement) {
-    audioElement.pause(); // Pausa la transmisión al cerrar
+    audioElement.pause(); 
   }
 
   if (playerFlotante) {
-    playerFlotante.style.display = 'none'; // Oculta la pestaña flotante
+    playerFlotante.style.display = 'none'; 
   }
 }
 
 // ==========================================
-// CONTROLADORES DEL MODAL DE OTRAS LOCALIDADES
+// CONTROLADORES Y CARGA DEL MODAL DE OTRAS LOCALIDADES
 // ==========================================
 function abrirModalOtrasLoc() {
   const modalLoc = document.getElementById('modal-otras-loc');
   if (modalLoc) {
     modalLoc.style.display = 'flex';
+    cargarOtrasLocalidadesClima();
   }
 }
 
@@ -194,4 +195,46 @@ function cerrarModalOtrasLoc() {
   if (modalLoc) {
     modalLoc.style.display = 'none';
   }
+}
+
+function cargarOtrasLocalidadesClima() {
+  const gridContainer = document.getElementById('modal-loc-grid-container');
+  if (!gridContainer) return;
+
+  gridContainer.innerHTML = '<div style="color: #aaa; text-align: center; grid-column: 1 / -1; padding: 20px;">Cargando localidades...</div>';
+
+  const localidades = [
+    { nombre: 'San Luis', lat: -33.3017, lon: -66.3378 },
+    { nombre: 'Villa Mercedes', lat: -33.6749, lon: -65.4561 },
+    { nombre: 'Merlo', lat: -32.3481, lon: -65.0122 },
+    { nombre: 'La Punta', lat: -33.1833, lon: -66.3167 },
+    { nombre: 'Juana Koslay', lat: -33.2667, lon: -66.2167 },
+    { nombre: 'San Francisco', lat: -32.5833, lon: -65.9500 },
+    { nombre: 'Concarán', lat: -32.5599, lon: -65.2531 },
+    { nombre: 'Quines', lat: -32.2333, lon: -65.8833 },
+    { nombre: 'Villa de la Paz', lat: -32.4167, lon: -65.0500 },
+    { nombre: 'Naschel', lat: -32.9167, lon: -65.3833 },
+    { nombre: 'Beazley', lat: -33.6000, lon: -66.7833 },
+    { nombre: 'Tilisarao', lat: -32.7667, lon: -65.2000 }
+  ];
+
+  Promise.all(
+    localidades.map(loc => 
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`)
+        .then(res => res.json())
+        .then(data => ({
+          nombre: loc.nombre,
+          temp: data.current_weather ? Math.round(data.current_weather.temperature) : '--'
+        }))
+        .catch(() => ({ nombre: loc.nombre, temp: '--' }))
+    )
+  ).then(resultados => {
+    gridContainer.innerHTML = '';
+    resultados.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'weather-item';
+      div.innerHTML = `<span>${item.nombre}</span><strong>${item.temp}°C</strong>`;
+      gridContainer.appendChild(div);
+    });
+  });
 }
