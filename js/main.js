@@ -24,6 +24,30 @@ document.addEventListener("DOMContentLoaded", function () {
   inicializarArrastrePlayer();
 });
 
+// Función auxiliar para transformar enlaces de video (YouTube, etc.) en formatos incrustables seguros
+function obtenerHtmlMultimedia(urlVideo, urlImagen) {
+  if (urlVideo && urlVideo.trim() !== "") {
+    let videoUrl = urlVideo.trim();
+    // Si es un enlace de YouTube normal o corto, lo convertimos a embebido
+    if (videoUrl.includes("youtube.com/watch?v=")) {
+      let videoId = videoUrl.split("v=")[1]?.split("&")[0];
+      if (videoId) {
+        return `<iframe src="https://www.youtube.com/embed/${videoId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
+      }
+    } else if (videoUrl.includes("youtu.be/")) {
+      let videoId = videoUrl.split("youtu.be/")[1]?.split("?")[0];
+      if (videoId) {
+        return `<iframe src="https://www.youtube.com/embed/${videoId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
+      }
+    }
+    // Para cualquier otro tipo de video de red social o enlace directo de video con reproductor nativo
+    return `<video src="${videoUrl}" controls style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>`;
+  }
+  
+  // Por defecto retorna la imagen si no hay video
+  return `<img src="${urlImagen || ''}" alt="Imagen noticia" style="width: 100%; height: 100%; object-fit: cover; display: block;">`;
+}
+
 function renderizarNoticias(listaParaPintar) {
   const nacionales = document.getElementById('grid-nacionales');
   const internacionales = document.getElementById('grid-internacionales');
@@ -76,9 +100,12 @@ function renderizarNoticias(listaParaPintar) {
       card.className = 'card';
       
       let fechaTexto = formatearFechaYHora(fechaCruda, noticia.hora || noticia.Hora);
+      let contenidoMultimediaHtml = obtenerHtmlMultimedia(noticia.video || noticia.Video, noticia.imagen || noticia.Imagen);
 
       card.innerHTML = `
-        <img src="${noticia.imagen || ''}" alt="Imagen noticia" style="width: 100%; height: 160px; object-fit: cover; display: block;">
+        <div style="width: 100%; height: 160px; overflow: hidden; background: #000;">
+          ${contenidoMultimediaHtml}
+        </div>
         <div class="card-body" style="padding: 12px;">
           <div style="font-size: 0.75rem; color: #d9534f; font-weight: bold; margin-bottom: 6px;">${fechaTexto}</div>
           <div class="card-title" style="font-weight: 600; font-size: 0.85rem; line-height: 1.2; height: 2.4em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: #222;">
@@ -135,8 +162,41 @@ function formatearFechaYHora(fechaCruda, horaCruda) {
 function abrirNoticiaModal(noticia) {
   document.getElementById('modal-categoria').innerText = noticia.categoria || '';
   document.getElementById('modal-titulo').innerText = noticia.titulo || '';
-  document.getElementById('modal-imagen').src = noticia.imagen || '';
   document.getElementById('modal-cuerpo').innerText = noticia.cuerpo || '';
+
+  // Contenedor multimedia del modal (asegúrate de que en tu HTML el modal soporte esto, o aplicamos dinámicamente)
+  const modalImagenElem = document.getElementById('modal-imagen');
+  if (modalImagenElem) {
+    // Verificamos si existe un contenedor para video en el modal o reemplazamos el src de la imagen por el reproductor multimedia
+    let multimediaModalHtml = obtenerHtmlMultimedia(noticia.video || noticia.Video, noticia.imagen || noticia.Imagen);
+    
+    // Si el elemento modal-imagen es una etiqueta IMG, la envolvemos o reemplazamos su contenedor padre si es necesario, 
+    // o simplemente actualizamos el contenido si adaptamos el modal. 
+    // Para mantener compatibilidad estricta con tu estructura actual:
+    if (modalImagenElem.tagName === 'IMG') {
+      if (noticia.video && noticia.video.trim() !== "") {
+        // Si hay video y el elemento es IMG, creamos dinámicamente un contenedor de video si no existe
+        let parentModalImg = modalImagenElem.parentNode;
+        let videoContainerModal = document.getElementById('modal-video-container');
+        if (!videoContainerModal) {
+          videoContainerModal = document.createElement('div');
+          videoContainerModal.id = 'modal-video-container';
+          videoContainerModal.style.width = '100%';
+          videoContainerModal.style.height = '300px';
+          videoContainerModal.style.maxHeight = '50vh';
+          videoContainerModal.style.background = '#000';
+          parentModalImg.insertBefore(videoContainerModal, modalImagenElem);
+        }
+        videoContainerModal.innerHTML = multimediaModalHtml;
+        modalImagenElem.style.display = 'none';
+      } else {
+        modalImagenElem.style.display = 'block';
+        modalImagenElem.src = noticia.imagen || '';
+        let videoContainerModal = document.getElementById('modal-video-container');
+        if (videoContainerModal) videoContainerModal.innerHTML = '';
+      }
+    }
+  }
 
   const elFecha = document.getElementById('modal-fecha');
   if (elFecha) elFecha.innerText = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
@@ -212,12 +272,10 @@ function inicializarArrastrePlayer() {
   let startX, startY, initialX, initialY;
 
   function dragStart(e) {
-    // Evitar arrastre si se hace clic en el botón de cerrar
     if (e.target.classList.contains('radio-flotante-close')) return;
 
     isDragging = true;
     
-    // Obtener la posición inicial (ya sea táctil o de mouse)
     const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
@@ -228,7 +286,6 @@ function inicializarArrastrePlayer() {
     initialX = rect.left;
     initialY = rect.top;
 
-    // Cambiar posicionamiento a pixels fijos absolutos para permitir movimiento libre
     player.style.left = initialX + 'px';
     player.style.top = initialY + 'px';
     player.style.bottom = 'auto';
@@ -253,7 +310,6 @@ function inicializarArrastrePlayer() {
     let newX = initialX + dx;
     let newY = initialY + dy;
 
-    // Restringir dentro de los límites de la ventana del navegador
     const maxX = window.innerWidth - player.offsetWidth;
     const maxY = window.innerHeight - player.offsetHeight;
 
