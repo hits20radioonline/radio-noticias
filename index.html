@@ -113,8 +113,9 @@
             
             <!-- WIDGET DE CLIMA EN VIVO UBICADO ARRIBA DE NOTICIAS NACIONALES -->
             <div class="weather-ticker-container">
-                <div class="weather-ticker-title">
+                <div class="weather-ticker-title" style="display: flex; justify-content: space-between; align-items: center;">
     <span>🌡️ Estado del Clima en la Provincia de San Luis</span>
+    <button onclick="abrirModalOtrasLoc()" class="btn-otras-loc">Otras Loc</button>
 </div>
                 <div class="weather-ticker-scroll" id="weather-ticker">
                     <div class="weather-item">Cargando clima...</div>
