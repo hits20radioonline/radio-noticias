@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -184,11 +184,22 @@
                 </button>
             </div>
 
-            <!-- Contador -->
-            <div style="margin-top: 15px; text-align: center;">
-                <iframe src="https://saultula.github.io/contador/widget.html?id=Portal%20de%20Noticias%20Hits20&t=1787017616957" width="240" height="270" frameborder="0" scrolling="no" style="border:none; overflow:hidden;"></iframe>
+            <!-- Contador de Visitas Ajustado al 100% (Ancho del formulario) -->
+            <div style="margin-top: 15px; text-align: center; width: 100%;">
+                <iframe src="https://contador-red-delta.vercel.app/widget.html?id=PORTAL%20DE%20NOTICIAS%20HITS20&t=1787066414602" width="300" height="246" frameborder="0" scrolling="no" style="border:none; overflow:hidden;"></iframe>
             </div>
         
+            <!-- FORMULARIO DE CONTACTO (FORMSPREE) -->
+            <div class="contact-widget">
+                <h3>Contacto</h3>
+                <form action="https://formspree.io/f/mdenpzbp" method="POST">
+                    <input type="text" name="nombre" placeholder="Tu Nombre" required>
+                    <input type="email" name="email" placeholder="Tu Email" required>
+                    <textarea name="mensaje" placeholder="Tu mensaje..." required></textarea>
+                    <button type="submit">Enviar Mensaje</button>
+                </form>
+            </div>
+
             <!-- 2. Espacios para Pauta -->
             <div class="ads">
                 <div class="ad-slot"><p>Espacio Publicitario / Flyer 1</p></div>
@@ -201,6 +212,19 @@
             </div>
         </aside>
     </div>
+
+    <!-- FOOTER CON COPYRIGHT Y LOGOS EN ASOCIACIÓN -->
+    <footer style="background: #1a1a1a; color: #fff; padding: 25px 20px; text-align: center; margin-top: 40px; border-top: 3px solid #d9534f;">
+        <div style="margin-bottom: 15px;">
+            <p style="margin: 0 0 10px 0; font-size: 0.9rem; letter-spacing: 0.5px;">En asociación con:</p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+                <img src="logo.png" alt="Logo 1" style="height: 45px; width: auto; object-fit: contain;">
+                <span style="font-size: 1.2rem; font-weight: bold; color: #d9534f;">&</span>
+                <img src="logo2.png" alt="Logo 2" style="height: 45px; width: auto; object-fit: contain;">
+            </div>
+        </div>
+        <p style="margin: 0; font-size: 0.85rem; opacity: 0.75;">&copy; 2026 Portal de Noticias. Todos los derechos reservados.</p>
+    </footer>
 
     <!-- MODAL DE NOTICIA -->
     <div id="modal-noticia" class="modal">
@@ -304,7 +328,7 @@
         headerDrag.addEventListener('mousedown', (e) => {
             isDragging = true;
             offsetX = e.clientX - modalFlotante.offsetLeft;
-            offsetY = e.clientY - modalFlotante.offsetTop;
+            offsetY = e.clientY - modalFlontante.offsetTop;
         });
 
         document.addEventListener('mousemove', (e) => {
