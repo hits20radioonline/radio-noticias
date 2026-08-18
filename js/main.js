@@ -1,7 +1,7 @@
 let todasLasNoticias = []; // Variable global para guardar los datos de la API
 
 document.addEventListener("DOMContentLoaded", function () {
-  const urlAPI = "https://script.google.com/macros/s/AKfycbyBguwaVlic_j1h_r7l-YDTOybxvquMy5XZXuFC0ysbHZRZR_xW3LlDuQnV7UCWlPn0/exec";
+  const urlAPI = "https://script.google.com/macros/s/AKfycbzrN4pskes2eTBGxvuvsPFuKcm3VoIeUyc4FJGG962DkdMf2MYQYSkhBzji40oRmH1p/exec";
 
   fetch(urlAPI)
     .then(response => response.json())
