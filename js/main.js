@@ -178,3 +178,20 @@ function cerrarPlayer() {
     playerFlotante.style.display = 'none'; // Oculta la pestaña flotante
   }
 }
+
+// ==========================================
+// CONTROLADORES DEL MODAL DE OTRAS LOCALIDADES
+// ==========================================
+function abrirModalOtrasLoc() {
+  const modalLoc = document.getElementById('modal-otras-loc');
+  if (modalLoc) {
+    modalLoc.style.display = 'flex';
+  }
+}
+
+function cerrarModalOtrasLoc() {
+  const modalLoc = document.getElementById('modal-otras-loc');
+  if (modalLoc) {
+    modalLoc.style.display = 'none';
+  }
+}
