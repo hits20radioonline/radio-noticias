@@ -149,17 +149,21 @@ function cerrarNoticia() {
 }
 
 // ==========================================
-// CONTROLADORES DEL REPRODUCTOR FLOTANTE
+// CONTROLADORES DEL REPRODUCTOR FLOTANTE Y VOLUMEN
 // ==========================================
 function abrirPlayer() {
   const playerFlotante = document.getElementById('radio-modal-flotante');
   const audioElement = document.getElementById('audio-stream');
+  const volumeSlider = document.getElementById('volumeSlider');
 
   if (playerFlotante) {
     playerFlotante.style.display = 'block'; 
   }
   
   if (audioElement) {
+    let volInicial = volumeSlider ? volumeSlider.value / 100 : 0.4;
+    audioElement.volume = volInicial;
+
     audioElement.play().catch(error => {
       console.log("El navegador requiere interacción para reproducir automáticamente:", error);
     });
@@ -176,6 +180,19 @@ function cerrarPlayer() {
 
   if (playerFlotante) {
     playerFlotante.style.display = 'none'; 
+  }
+}
+
+function cambiarVolumen(valor) {
+  const audioElement = document.getElementById('audio-stream');
+  const volumeValue = document.getElementById('volumeValue');
+
+  if (audioElement) {
+    audioElement.volume = valor / 100;
+  }
+
+  if (volumeValue) {
+    volumeValue.innerText = valor;
   }
 }
 
