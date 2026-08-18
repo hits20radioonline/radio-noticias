@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Noticias & Radio En Vivo</title>
     <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Configuración PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d9534f">
+
     <style>
         /* Estilos para la barra de clima en vivo */
         .weather-ticker-container {
@@ -206,9 +211,12 @@
                 <div class="ad-slot"><p>Espacio Publicitario / Flyer 2</p></div>
             </div>
 
-            <!-- 3. Inicio de Sesión -->
-            <div style="margin-top: 25px; text-align: center;">
+            <!-- 3. Inicio de Sesión e Instalar App -->
+            <div style="margin-top: 25px; text-align: center; display: flex; flex-direction: column; gap: 10px;">
                 <a href="login.html" style="background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-size: 0.95rem; font-weight: bold; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Inicio de sesión</a>
+                
+                <!-- Botón de Instalar PWA (Oculto por defecto hasta que el navegador permita instalar) -->
+                <button id="btn-instalar" style="display: none; background: #d9534f; color: #fff; border: none; padding: 12px 20px; border-radius: 5px; font-size: 0.95rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); width: 100%;">📱 Instalar App</button>
             </div>
         </aside>
     </div>
@@ -275,8 +283,38 @@
         </div>
     </div>
     
-    <!-- SCRIPT PARA CARGAR EL CLIMA PRINCIPAL Y ARRASTRE -->
+    <!-- SCRIPT PARA CLIMA, SERVICE WORKER Y BOTÓN INSTALACIÓN -->
     <script>
+        // Registro del Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+                    .catch(err => console.error('Error al registrar el Service Worker:', err));
+            });
+        }
+
+        // Lógica del botón de Instalación de la PWA
+        let deferredPrompt;
+        const btnInstalar = document.getElementById('btn-instalar');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            btnInstalar.style.display = 'block'; // Muestra el botón cuando es instalable
+        });
+
+        btnInstalar.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('El usuario aceptó instalar la PWA');
+            }
+            deferredPrompt = null;
+            btnInstalar.style.display = 'none';
+        });
+
         const apiKey = 'e275965fe86eeeabba320d7b99bb4faf';
         const cities = [
             "San Luis", 
@@ -284,7 +322,7 @@
             "Merlo", 
             "La Punta", 
             "Juana Koslay", 
-            "El Trapiche"
+            "San Francisco del Monte de Oro"
         ];
 
         async function loadWeather() {
