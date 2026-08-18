@@ -35,7 +35,6 @@ body {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    max-width: 100%;
     padding: 0 10px;
 }
 
@@ -404,7 +403,7 @@ body {
 }
 
 /* ==========================================
-   ESTILOS DEL REPRODUCTOR DE RADIO FLOTANTE
+   ESTILOS DEL REPRODUCTOR DE RADIO FLOTANTE (ARRASTRABLE)
    ========================================== */
 .radio-flotante-container {
     position: fixed;
@@ -430,6 +429,12 @@ body {
     font-weight: bold;
     font-size: 0.9rem;
     border-bottom: 3px solid #d9534f;
+    cursor: grab; /* Muestra el cursor de agarre */
+    user-select: none; /* Evita seleccionar el texto al arrastrar */
+}
+
+.radio-flotante-header:active {
+    cursor: grabbing;
 }
 
 .radio-flotante-close {
