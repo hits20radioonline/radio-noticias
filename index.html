@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Noticias</title>
     <style>
-        /* Estilos generales básicos para la estructura */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -55,7 +54,6 @@
         .card:hover {
             transform: translateY(-3px);
         }
-        /* Estilos del Modal */
         #modal-noticia {
             display: none;
             position: fixed;
@@ -96,30 +94,25 @@
         <h1>Portal de Noticias</h1>
     </header>
 
-    <!-- Barra de Búsqueda -->
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar noticias..." onkeyup="filterNews()">
     </div>
 
-    <!-- SECCIÓN: NOTICIAS NACIONALES -->
     <section class="seccion-noticias">
         <h2>Noticias Nacionales</h2>
         <div id="grid-nacionales" class="noticias-grid"></div>
     </section>
 
-    <!-- SECCIÓN: NOTICIAS PROVINCIALES -->
     <section class="seccion-noticias">
         <h2>Noticias Provinciales</h2>
         <div id="grid-provinciales" class="noticias-grid"></div>
     </section>
 
-    <!-- SECCIÓN: NOTICIAS INTERNACIONALES -->
     <section class="seccion-noticias">
         <h2>Noticias Internacionales</h2>
         <div id="grid-internacionales" class="noticias-grid"></div>
     </section>
 
-    <!-- MODAL DE VISUALIZACIÓN DE NOTICIA -->
     <div id="modal-noticia">
         <div class="modal-content">
             <span class="close-modal" onclick="cerrarNoticia()">&times;</span>
@@ -127,7 +120,6 @@
             <h2 id="modal-titulo" style="margin-top: 5px;"></h2>
             <div id="modal-fecha" style="font-size: 0.85rem; color: #777; margin-bottom: 15px;"></div>
             
-            <!-- Contenedor multimedia para imagen o video dentro del modal -->
             <div style="width: 100%; max-height: 350px; overflow: hidden; background: #000; margin-bottom: 15px;">
                 <img id="modal-imagen" style="width: 100%; height: auto; display: block;" alt="Imagen detalle">
             </div>
@@ -136,7 +128,6 @@
         </div>
     </div>
 
-    <!-- Enlace al archivo JavaScript principal -->
     <script src="js/main.js"></script>
 </body>
 </html>
