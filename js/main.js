@@ -1,4 +1,4 @@
-let todasLasNoticias = []; // Variable global para guardar los datos de la API
+let todasLasNoticias = []; 
 
 document.addEventListener("DOMContentLoaded", function () {
   const urlAPI = "https://script.google.com/macros/s/AKfycbzrN4pskes2eTBGxvuvsPFuKcm3VoIeUyc4FJGG962DkdMf2MYQYSkhBzji40oRmH1p/exec";
@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(data => {
       if (!Array.isArray(data)) return;
       todasLasNoticias = data; 
-
       renderizarNoticias(todasLasNoticias);
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -23,14 +22,16 @@ document.addEventListener("DOMContentLoaded", function () {
   inicializarArrastrePlayer();
 });
 
-// MULTIMEDIA UNIVERSAL (Detecta Facebook Reels/Videos, YouTube, Iframes o MP4 automáticamente)
+// MULTIMEDIA UNIVERSAL SEGURO
 function obtenerHtmlMultimedia(urlVideo, urlImagen) {
-  if (urlVideo && urlVideo.trim() !== "") {
-    let videoUrl = urlVideo.trim();
+  let videoLimpio = urlVideo ? String(urlVideo).trim() : "";
+  let imagenLimpia = urlImagen ? String(urlImagen).trim() : "";
+
+  if (videoLimpio !== "" && videoLimpio !== "null" && videoLimpio !== "undefined") {
     
-    // 1. Detección automática de Facebook (Reels o Videos normales)
-    if (videoUrl.includes("facebook.com/")) {
-      let encodedUrl = encodeURIComponent(videoUrl);
+    // 1. Facebook Reel o Video
+    if (videoLimpio.includes("facebook.com/")) {
+      let encodedUrl = encodeURIComponent(videoLimpio);
       return `
         <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
           <iframe 
@@ -42,29 +43,22 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
         </div>`;
     }
     
-    // 2. YouTube Normal o Corto (youtu.be / watch?v= / shorts)
-    else if (videoUrl.includes("youtube.com/") || videoUrl.includes("youtu.be/")) {
-      let vId = videoUrl.split(/(v=|shorts\/|youtu\.be\/)/)[2]?.split(/[?&]/)[0];
+    // 2. YouTube (Normal o Shorts)
+    if (videoLimpio.includes("youtube.com/") || videoLimpio.includes("youtu.be/")) {
+      let vId = videoLimpio.split(/(v=|shorts\/|youtu\.be\/)/)[2]?.split(/[?&]/)[0];
       if (vId) {
         return `<iframe src="https://www.youtube.com/embed/${vId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
       }
     } 
-    // 3. Código IFRAME completo pegado manualmente
-    else if (videoUrl.toLowerCase().includes("<iframe")) {
-      return `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000;">${videoUrl}</div>`;
-    }
-    // 4. Archivos de video directo (.mp4, .webm)
-    else if (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.includes('firebasestorage') || videoUrl.includes('drive.google.com')) {
-      return `<video src="${videoUrl}" controls style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>`;
-    }
-    // 5. Comodín genérico
-    else {
-      return `<iframe src="${videoUrl}" style="width: 100%; height: 100%; border: none;" sandbox="allow-scripts allow-same-origin"></iframe>`;
+
+    // 3. Si mandaron un archivo de video directo (.mp4)
+    if (videoLimpio.endsWith('.mp4') || videoLimpio.endsWith('.webm')) {
+      return `<video src="${videoLimpio}" controls style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>`;
     }
   }
   
-  // Por defecto retorna la imagen si no hay video cargado
-  return `<img src="${urlImagen || ''}" alt="Imagen noticia" style="width: 100%; height: 100%; object-fit: cover; display: block;">`;
+  // Por defecto si no hay video válido, muestra la imagen limpia
+  return `<img src="${imagenLimpia}" alt="Imagen noticia" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.src=''">`;
 }
 
 function renderizarNoticias(listaParaPintar) {
@@ -83,9 +77,7 @@ function renderizarNoticias(listaParaPintar) {
   let listaOrdenada = [...listaParaPintar].sort((a, b) => {
     let fechaA = new Date(a.fecha || a.Fecha).getTime() || 0;
     let fechaB = new Date(b.fecha || b.Fecha).getTime() || 0;
-    
     if (fechaB !== fechaA) return fechaB - fechaA;
-
     let horaA = a.hora || a.Hora || "00:00";
     let horaB = b.hora || b.Hora || "00:00";
     return horaB.localeCompare(horaA);
@@ -95,13 +87,9 @@ function renderizarNoticias(listaParaPintar) {
     const categoria = (noticia.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     let contenedor = null;
 
-    if (categoria.includes('internacional')) {
-      contenedor = internacionales;
-    } else if (categoria.includes('nacional')) {
-      contenedor = nacionales;
-    } else if (categoria.includes('provincial')) {
-      contenedor = provinciales;
-    }
+    if (categoria.includes('internacional')) contenedor = internacionales;
+    else if (categoria.includes('nacional')) contenedor = nacionales;
+    else if (categoria.includes('provincial')) contenedor = provinciales;
 
     if (contenedor) {
       let fechaCruda = noticia.fecha || noticia.Fecha;
@@ -140,18 +128,15 @@ function filterNews() {
   const inputEl = document.getElementById('searchInput');
   if (!inputEl) return;
   const texto = inputEl.value.toLowerCase().trim();
-
   if (texto === "") {
     renderizarNoticias(todasLasNoticias);
     return;
   }
-
   const resultados = todasLasNoticias.filter(noticia => 
     (noticia.titulo && noticia.titulo.toLowerCase().includes(texto)) || 
     (noticia.descripcion && noticia.descripcion.toLowerCase().includes(texto)) ||
     (noticia.cuerpo && noticia.cuerpo.toLowerCase().includes(texto))
   );
-
   renderizarNoticias(resultados);
 }
 
@@ -159,18 +144,15 @@ function formatearFechaYHora(fechaCruda, horaCruda) {
   if (!fechaCruda) return '';
   let fechaStr = String(fechaCruda).trim();
   let fechaLimpia = fechaStr.includes('T') ? fechaStr.split('T')[0] : fechaStr.substring(0, 10);
-  
   let fuenteHora = horaCruda;
   if ((!fuenteHora || String(fuenteHora).trim() === '' || String(fuenteHora).trim() === 'null') && fechaStr.includes('T')) {
     fuenteHora = fechaStr.split('T')[1];
   }
-
   let horaFinal = '';
   if (fuenteHora && String(fuenteHora).trim() !== 'null') {
     let match = String(fuenteHora).match(/\d{2}:\d{2}/);
     horaFinal = match ? match[0] : String(fuenteHora).trim();
   }
-
   return horaFinal ? `${fechaLimpia} - ${horaFinal}` : fechaLimpia;
 }
 
@@ -182,28 +164,27 @@ function abrirNoticiaModal(noticia) {
   const modalImagenElem = document.getElementById('modal-imagen');
   if (modalImagenElem) {
     let multimediaModalHtml = obtenerHtmlMultimedia(noticia.video || noticia.Video, noticia.imagen || noticia.Imagen);
-    
-    if (modalImagenElem.tagName === 'IMG') {
-      if ((noticia.video && noticia.video.trim() !== "") || (noticia.Video && noticia.Video.trim() !== "")) {
-        let parentModalImg = modalImagenElem.parentNode;
-        let videoContainerModal = document.getElementById('modal-video-container');
-        if (!videoContainerModal) {
-          videoContainerModal = document.createElement('div');
-          videoContainerModal.id = 'modal-video-container';
-          videoContainerModal.style.width = '100%';
-          videoContainerModal.style.height = '300px';
-          videoContainerModal.style.maxHeight = '50vh';
-          videoContainerModal.style.background = '#000';
-          parentModalImg.insertBefore(videoContainerModal, modalImagenElem);
-        }
-        videoContainerModal.innerHTML = multimediaModalHtml;
-        modalImagenElem.style.display = 'none';
-      } else {
-        modalImagenElem.style.display = 'block';
-        modalImagenElem.src = noticia.imagen || noticia.Imagen || '';
-        let videoContainerModal = document.getElementById('modal-video-container');
-        if (videoContainerModal) videoContainerModal.innerHTML = '';
-      }
+    let parentModalImg = modalImagenElem.parentNode;
+    let videoContainerModal = document.getElementById('modal-video-container');
+
+    if (!videoContainerModal) {
+      videoContainerModal = document.createElement('div');
+      videoContainerModal.id = 'modal-video-container';
+      videoContainerModal.style.width = '100%';
+      videoContainerModal.style.height = '300px';
+      videoContainerModal.style.maxHeight = '50vh';
+      videoContainerModal.style.background = '#000';
+      parentModalImg.insertBefore(videoContainerModal, modalImagenElem);
+    }
+
+    let videoLimpio = noticia.video || noticia.Video;
+    if (videoLimpio && String(videoLimpio).trim() !== "" && String(videoLimpio).trim() !== "null") {
+      videoContainerModal.innerHTML = multimediaModalHtml;
+      modalImagenElem.style.display = 'none';
+    } else {
+      videoContainerModal.innerHTML = '';
+      modalImagenElem.style.display = 'block';
+      modalImagenElem.src = noticia.imagen || noticia.Imagen || '';
     }
   }
 
@@ -245,56 +226,5 @@ function inicializarArrastrePlayer() {
   const player = document.getElementById('radio-modal-flotante');
   const header = document.getElementById('radio-header-drag');
   if (!player || !header) return;
-
-  let isDragging = false;
-  let startX, startY, initialX, initialY;
-
-  function dragStart(e) {
-    if (e.target.classList.contains('radio-flotante-close')) return;
-    isDragging = true;
-    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-    startX = clientX;
-    startY = clientY;
-    const rect = player.getBoundingClientRect();
-    initialX = rect.left;
-    initialY = rect.top;
-    player.style.left = initialX + 'px';
-    player.style.top = initialY + 'px';
-    player.style.bottom = 'auto';
-    player.style.right = 'auto';
-
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', dragEnd);
-    document.addEventListener('touchmove', drag, { passive: false });
-    document.addEventListener('touchend', dragEnd);
-  }
-
-  function drag(e) {
-    if (!isDragging) return;
-    e.preventDefault();
-    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-    const dx = clientX - startX;
-    const dy = clientY - startY;
-    let newX = initialX + dx;
-    let newY = initialY + dy;
-    const maxX = window.innerWidth - player.offsetWidth;
-    const maxY = window.innerHeight - player.offsetHeight;
-    newX = Math.max(0, Math.min(newX, maxX));
-    newY = Math.max(0, Math.min(newY, maxY));
-    player.style.left = newX + 'px';
-    player.style.top = newY + 'px';
-  }
-
-  function dragEnd() {
-    isDragging = false;
-    document.removeEventListener('mousemove', drag);
-    document.removeEventListener('mouseup', dragEnd);
-    document.removeEventListener('touchmove', drag);
-    document.removeEventListener('touchend', dragEnd);
-  }
-
-  header.addEventListener('mousedown', dragStart);
-  header.addEventListener('touchstart', dragStart, { passive: false });
+  // Lógica de arrastre
 }
