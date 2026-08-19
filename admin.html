@@ -6,7 +6,7 @@
     <title>Panel de Administración de Noticias</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
-        .admin-container { max-width: 600px; background: #fff; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .admin-container { max-width: 700px; background: #fff; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         h2 { border-bottom: 2px solid #d9534f; padding-bottom: 10px; color: #222; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
@@ -14,6 +14,11 @@
         textarea { height: 120px; resize: vertical; }
         .btn-submit { background: #d9534f; color: #fff; border: none; padding: 12px; width: 100%; font-size: 1rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
         .btn-submit:hover { background: #c9302c; }
+        table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 0.85rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #222; color: #fff; }
+        .btn-editar { background: #f0ad4e; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        .btn-borrar { background: #d9534f; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -22,6 +27,8 @@
         <h2>Panel de Administración de Noticias</h2>
         
         <form id="formNoticia">
+            <input type="hidden" id="inputEditId">
+
             <div class="form-group">
                 <label>Título de la Noticia:</label>
                 <input type="text" id="inputTitulo" required placeholder="Escribe el título...">
@@ -41,13 +48,11 @@
                 <input type="text" id="inputImagen" placeholder="https://...">
             </div>
 
-            <!-- Campo específico para YouTube -->
             <div class="form-group">
                 <label>URL del Video de YouTube (Opcional):</label>
                 <input type="text" id="inputVideoYoutube" placeholder="https://www.youtube.com/watch?v=...">
             </div>
 
-            <!-- NUEVO: Campo específico para Facebook Reel / Video -->
             <div class="form-group">
                 <label style="color: #1877f2;">URL de Facebook Reel / Video (Opcional):</label>
                 <input type="text" id="inputVideoFacebook" placeholder="https://www.facebook.com/reel/...">
@@ -71,29 +76,121 @@
 
             <button type="button" class="btn-submit" onclick="publicarNoticia()">Publicar Noticia</button>
         </form>
+
+        <h3 style="margin-top: 30px;">Últimas Noticias Publicadas</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha y Hora</th>
+                    <th>Título</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-ultimas-noticias">
+                <!-- Se llena automáticamente -->
+            </tbody>
+        </table>
     </div>
 
     <script>
+        const urlAPI = "https://script.google.com/macros/s/AKfycbzrN4pskes2eTBGxvuvsPFuKcm3VoIeUyc4FJGG962DkdMf2MYQYSkhBzji40oRmH1p/exec";
+
+        document.addEventListener("DOMContentLoaded", cargarNoticiasAdmin);
+
+        function cargarNoticiasAdmin() {
+            fetch(urlAPI)
+                .then(res => res.json())
+                .then(data => {
+                    if (!Array.isArray(data)) return;
+                    const tbody = document.getElementById('tabla-ultimas-noticias');
+                    tbody.innerHTML = '';
+                    
+                    // Ordenar por fecha descendente
+                    data.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+
+                    data.slice(0, 5).forEach(noticia => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${noticia.fecha || ''} ${noticia.hora || ''}</td>
+                            <td>${noticia.titulo || ''}</td>
+                            <td>${noticia.categoria || ''}</td>
+                            <td>
+                                <button class="btn-editar" onclick='prepararEdicion(${JSON.stringify(noticia)})'>Editar</button>
+                                <button class="btn-borrar" onclick="borrarNoticia('${noticia.id}')">Borrar</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(err => console.error("Error cargando admin:", err));
+        }
+
         function publicarNoticia() {
             const urlYoutube = document.getElementById('inputVideoYoutube').value.trim();
             const urlFacebook = document.getElementById('inputVideoFacebook').value.trim();
-
-            // Si completa Facebook, priorizamos ese; si no, YouTube. Si llena ambos, usa Facebook.
             const videoFinal = urlFacebook !== "" ? urlFacebook : urlYoutube;
 
             const noticia = {
+                id: document.getElementById('inputEditId').value || Date.now().toString(),
                 titulo: document.getElementById('inputTitulo').value,
                 categoria: document.getElementById('inputCategoria').value,
                 imagen: document.getElementById('inputImagen').value,
-                video: videoFinal, // Se guarda en el único casillero que ya lee Google Sheets
+                video: videoFinal,
                 fecha: document.getElementById('inputFecha').value,
                 hora: document.getElementById('inputHora').value,
-                cuerpo: document.getElementById('inputCuerpo').value
+                cuerpo: document.getElementById('inputCuerpo').value,
+                accion: document.getElementById('inputEditId').value ? 'editar' : 'crear'
             };
 
-            // Aquí va tu lógica habitual para enviar los datos al Web App de Google Apps Script
-            console.log("Datos a enviar:", noticia);
-            alert("¡Revisa tu script de envío! Los datos están listos.");
+            fetch(urlAPI, {
+                method: 'POST',
+                body: JSON.stringify(noticia)
+            })
+            .then(res => res.text())
+            .then(res => {
+                alert("¡Noticia guardada con éxito!");
+                document.getElementById('formNoticia').reset();
+                document.getElementById('inputEditId').value = '';
+                cargarNoticiasAdmin();
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Hubo un error al guardar.");
+            });
+        }
+
+        function prepararEdicion(noticia) {
+            document.getElementById('inputEditId').value = noticia.id || '';
+            document.getElementById('inputTitulo').value = noticia.titulo || '';
+            document.getElementById('inputCategoria').value = noticia.categoria || 'Provincial';
+            document.getElementById('inputImagen').value = noticia.imagen || '';
+            
+            let vid = noticia.video || noticia.Video || '';
+            if (vid.includes('facebook.com')) {
+                document.getElementById('inputVideoFacebook').value = vid;
+                document.getElementById('inputVideoYoutube').value = '';
+            } else {
+                document.getElementById('inputVideoYoutube').value = vid;
+                document.getElementById('inputVideoFacebook').value = '';
+            }
+
+            document.getElementById('inputFecha').value = noticia.fecha || '';
+            document.getElementById('inputHora').value = noticia.hora || '';
+            document.getElementById('inputCuerpo').value = noticia.cuerpo || '';
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function borrarNoticia(id) {
+            if (!confirm("¿Estás seguro de borrar esta noticia?")) return;
+            fetch(urlAPI, {
+                method: 'POST',
+                body: JSON.stringify({ id: id, accion: 'borrar' })
+            })
+            .then(() => {
+                alert("Noticia borrada.");
+                cargarNoticiasAdmin();
+            });
         }
     </script>
 </body>
