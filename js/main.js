@@ -22,19 +22,15 @@ document.addEventListener("DOMContentLoaded", function () {
   inicializarArrastrePlayer();
 });
 
-// MULTIMEDIA UNIVERSAL BLINDADO (Evita pantallas negras)
 function obtenerHtmlMultimedia(urlVideo, urlImagen) {
   let videoLimpio = urlVideo ? String(urlVideo).trim() : "";
   let imagenLimpia = urlImagen ? String(urlImagen).trim() : "";
 
-  // Validar si realmente hay un link de video válido
   const esFacebook = videoLimpio.includes("facebook.com/");
   const esYoutube = videoLimpio.includes("youtube.com/") || videoLimpio.includes("youtu.be/");
   const esMp4 = videoLimpio.endsWith('.mp4');
 
   if (videoLimpio !== "" && (esFacebook || esYoutube || esMp4)) {
-    
-    // 1. Facebook Reel o Video
     if (esFacebook) {
       let encodedUrl = encodeURIComponent(videoLimpio);
       return `
@@ -48,7 +44,6 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
         </div>`;
     }
     
-    // 2. YouTube
     if (esYoutube) {
       let vId = videoLimpio.split(/(v=|shorts\/|youtu\.be\/)/)[2]?.split(/[?&]/)[0];
       if (vId) {
@@ -56,13 +51,11 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
       }
     } 
 
-    // 3. MP4 Directo
     if (esMp4) {
       return `<video src="${videoLimpio}" controls style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>`;
     }
   }
   
-  // Si no hay video válido, por seguridad MUESTRA LA IMAGEN para que nunca quede en negro
   return `<img src="${imagenLimpia}" alt="Imagen noticia" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.src='' ">`;
 }
 
@@ -169,7 +162,7 @@ function abrirNoticiaModal(noticia) {
   const modalImagenElem = document.getElementById('modal-imagen');
   if (modalImagenElem) {
     let videoLimpio = noticia.video || noticia.Video;
-    let esVidValido = videoLimpio && (videoLimpio.includes('facebook.com/') || videoLimpio.includes('youtube.com/') || videoLimpio.includes('youtu.be/'));
+    let esVidValido = videoLimpio && (videoLimpio.includes('facebook.com/') || videoLimpio.includes('youtube.com/') || videoLimpio.includes('youtu.be/') || videoLimpio.endsWith('.mp4'));
 
     let parentModalImg = modalImagenElem.parentNode;
     let videoContainerModal = document.getElementById('modal-video-container');
@@ -232,5 +225,4 @@ function inicializarArrastrePlayer() {
   const player = document.getElementById('radio-modal-flotante');
   const header = document.getElementById('radio-header-drag');
   if (!player || !header) return;
-  // Lógica de arrastre
 }
