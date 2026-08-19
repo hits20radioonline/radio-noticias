@@ -24,27 +24,33 @@ document.addEventListener("DOMContentLoaded", function () {
   inicializarArrastrePlayer();
 });
 
-// Función auxiliar para transformar enlaces de video (YouTube, etc.) en formatos incrustables seguros
+// FUNCIÓN MULTIMEDIA UNIVERSAL (Videos de cualquier red social, YouTube, Shorts, Iframes o MP4)
 function obtenerHtmlMultimedia(urlVideo, urlImagen) {
   if (urlVideo && urlVideo.trim() !== "") {
     let videoUrl = urlVideo.trim();
-    // Si es un enlace de YouTube normal o corto, lo convertimos a embebido
-    if (videoUrl.includes("youtube.com/watch?v=")) {
-      let videoId = videoUrl.split("v=")[1]?.split("&")[0];
-      if (videoId) {
-        return `<iframe src="https://www.youtube.com/embed/${videoId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
+    
+    // 1. YouTube Normal o Corto (youtu.be / watch?v= / shorts)
+    if (videoUrl.includes("youtube.com/") || videoUrl.includes("youtu.be/")) {
+      let vId = videoUrl.split(/(v=|shorts\/|youtu\.be\/)/)[2]?.split(/[?&]/)[0];
+      if (vId) {
+        return `<iframe src="https://www.youtube.com/embed/${vId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
       }
-    } else if (videoUrl.includes("youtu.be/")) {
-      let videoId = videoUrl.split("youtu.be/")[1]?.split("?")[0];
-      if (videoId) {
-        return `<iframe src="https://www.youtube.com/embed/${videoId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
-      }
+    } 
+    // 2. Si pegas un código IFRAME completo (de Facebook, TikTok, Instagram, X, etc.)
+    else if (videoUrl.toLowerCase().includes("<iframe")) {
+      return `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000;">${videoUrl}</div>`;
     }
-    // Para cualquier otro tipo de video de red social o enlace directo de video con reproductor nativo
-    return `<video src="${videoUrl}" controls style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>`;
+    // 3. Enlaces directos a archivos de video (mp4, webm, etc.)
+    else if (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.includes('firebasestorage') || videoUrl.includes('drive.google.com')) {
+      return `<video src="${videoUrl}" controls style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>`;
+    }
+    // 4. Comodín general por si es otro tipo de enlace web embebible
+    else {
+      return `<iframe src="${videoUrl}" style="width: 100%; height: 100%; border: none;" sandbox="allow-scripts allow-same-origin"></iframe>`;
+    }
   }
   
-  // Por defecto retorna la imagen si no hay video
+  // Por defecto retorna la imagen si no hay video cargado
   return `<img src="${urlImagen || ''}" alt="Imagen noticia" style="width: 100%; height: 100%; object-fit: cover; display: block;">`;
 }
 
@@ -61,23 +67,21 @@ function renderizarNoticias(listaParaPintar) {
   const tresDiasEnMilisegundos = 3 * 24 * 60 * 60 * 1000;
   const terminoBusqueda = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim() : '';
 
-  // --- BLOQUE DE ORDENAMIENTO REFORZADO ---
+  // --- ORDENAMIENTO REFORZADO ---
   let listaOrdenada = [...listaParaPintar].sort((a, b) => {
     let fechaA = new Date(a.fecha || a.Fecha).getTime() || 0;
     let fechaB = new Date(b.fecha || b.Fecha).getTime() || 0;
     
-    // Si la fecha es diferente, ordenamos por fecha
     if (fechaB !== fechaA) return fechaB - fechaA;
 
-    // Si la fecha es igual, comparamos la hora (formato HH:MM)
     let horaA = a.hora || a.Hora || "00:00";
     let horaB = b.hora || b.Hora || "00:00";
     return horaB.localeCompare(horaA);
   });
-  // ---------------------------------------
 
   listaOrdenada.forEach(noticia => {
-    const categoria = (noticia.categoria || '').toLowerCase().trim();
+    // Normalizamos la categoría para evitar errores por tildes o mayúsculas (ej: "Provincial", "provincial", "Províncial")
+    const categoria = (noticia.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     let contenedor = null;
 
     if (categoria.includes('internacional')) {
@@ -169,7 +173,7 @@ function abrirNoticiaModal(noticia) {
     let multimediaModalHtml = obtenerHtmlMultimedia(noticia.video || noticia.Video, noticia.imagen || noticia.Imagen);
     
     if (modalImagenElem.tagName === 'IMG') {
-      if (noticia.video && noticia.video.trim() !== "") {
+      if ((noticia.video && noticia.video.trim() !== "") || (noticia.Video && noticia.Video.trim() !== "")) {
         let parentModalImg = modalImagenElem.parentNode;
         let videoContainerModal = document.getElementById('modal-video-container');
         if (!videoContainerModal) {
@@ -185,7 +189,7 @@ function abrirNoticiaModal(noticia) {
         modalImagenElem.style.display = 'none';
       } else {
         modalImagenElem.style.display = 'block';
-        modalImagenElem.src = noticia.imagen || '';
+        modalImagenElem.src = noticia.imagen || noticia.Imagen || '';
         let videoContainerModal = document.getElementById('modal-video-container');
         if (videoContainerModal) videoContainerModal.innerHTML = '';
       }
