@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Portal de Noticias & Radio En Vivo</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <style>
         /* Estilos para la barra de clima en vivo */
         .weather-ticker-container {
@@ -60,28 +60,15 @@
             color: #f0f0f0;
         }
 
-        /* Estilos del reproductor flotante arrastrable */
-        #radio-modal-flotante {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 280px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            z-index: 9999;
-            overflow: hidden;
+        .contador-widget {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
         }
-        #radio-header-drag {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-            background: #1a1a1a;
-            color: #fff;
-            cursor: move;
-            user-select: none;
+        .contador-widget iframe {
+            width: 100%;
+            max-width: 300px;
+            display: block;
         }
     </style>
 </head>
@@ -185,8 +172,8 @@
                 </button>
             </div>
 
-            <!-- Contador de Visitas Ajustado al 100% (Ancho del formulario) -->
-            <div style="margin-top: 15px; text-align: center; width: 100%;">
+            <!-- Contador de Visitas Ajustado al 100% -->
+            <div class="contador-widget" style="margin-top: 15px; text-align: center;">
                 <iframe src="https://contador-red-delta.vercel.app/widget.html?id=PORTAL%20DE%20NOTICIAS%20HITS20&t=1787066414602" width="300" height="246" frameborder="0" scrolling="no" style="border:none; overflow:hidden;"></iframe>
             </div>
         
@@ -208,8 +195,13 @@
             </div>
 
             <!-- 3. Inicio de Sesión -->
-            <div style="margin-top: 25px; text-align: center;">
-                <a href="login.html" style="background: #1a1a1a; color: #fff; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-size: 0.95rem; font-weight: bold; display: block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Inicio de sesión</a>
+            <div style="margin-top: 25px;">
+                <a href="login.html">Inicio de sesión</a>
+            </div>
+
+            <!-- 4. Instalar App (PWA) -->
+            <div style="margin-top: 10px;">
+                <button id="btn-instalar">⬇️ Instalar App</button>
             </div>
         </aside>
     </div>
@@ -240,8 +232,8 @@
     </div>
 
     <!-- REPRODUCTOR DE RADIO FLOTANTE -->
-    <div id="radio-modal-flotante">
-        <div id="radio-header-drag">
+    <div id="radio-modal-flotante" class="radio-flotante-container">
+        <div id="radio-header-drag" class="radio-flotante-header">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <img src="logo.png" alt="Logo" style="width: 30px; height: 30px; object-fit: contain; border-radius: 4px;">
                 <span style="font-weight: bold;">Radio en Vivo</span>
@@ -344,6 +336,44 @@
         document.addEventListener('mouseup', () => {
             isDragging = false;
         });
+    </script>
+
+    <!-- REGISTRO DEL SERVICE WORKER Y BOTÓN DE INSTALAR APP (PWA) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .catch(err => console.error('Error registrando Service Worker:', err));
+            });
+        }
+
+        let deferredPrompt = null;
+        const btnInstalar = document.getElementById('btn-instalar');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            btnInstalar.classList.add('visible');
+        });
+
+        btnInstalar.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            btnInstalar.disabled = true;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log('Resultado de instalación:', outcome);
+            deferredPrompt = null;
+            btnInstalar.classList.remove('visible');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            btnInstalar.classList.remove('visible');
+            deferredPrompt = null;
+        });
+
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            btnInstalar.classList.remove('visible');
+        }
     </script>
 
     <script src="js/main.js"></script>
