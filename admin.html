@@ -77,7 +77,7 @@
             <button type="button" class="btn-submit" onclick="publicarNoticia()">Publicar Noticia</button>
         </form>
 
-        <h3 style="margin-top: 30px;">Últimas Noticias Publicadas</h3>
+        <h3 style="margin-top: 30px;">Últimas 3 Noticias Publicadas</h3>
         <table>
             <thead>
                 <tr>
@@ -88,7 +88,7 @@
                 </tr>
             </thead>
             <tbody id="tabla-ultimas-noticias">
-                <!-- Se llena automáticamente -->
+                <!-- Se llena automáticamente con las últimas 3 -->
             </tbody>
         </table>
     </div>
@@ -106,13 +106,16 @@
                     const tbody = document.getElementById('tabla-ultimas-noticias');
                     tbody.innerHTML = '';
                     
-                    // Ordenar por fecha descendente
                     data.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
 
-                    data.slice(0, 5).forEach(noticia => {
+                    // Muestra estrictamente solo las últimas 3
+                    data.slice(0, 3).forEach(noticia => {
+                        let fechaLimpia = noticia.fecha ? String(noticia.fecha).split('T')[0] : '';
+                        let horaLimpia = noticia.hora ? String(noticia.hora) : '';
+
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${noticia.fecha || ''} ${noticia.hora || ''}</td>
+                            <td>${fechaLimpia} ${horaLimpia}</td>
                             <td>${noticia.titulo || ''}</td>
                             <td>${noticia.categoria || ''}</td>
                             <td>
@@ -148,7 +151,7 @@
                 body: JSON.stringify(noticia)
             })
             .then(res => res.text())
-            .then(res => {
+            .then(() => {
                 alert("¡Noticia guardada con éxito!");
                 document.getElementById('formNoticia').reset();
                 document.getElementById('inputEditId').value = '';
@@ -175,7 +178,7 @@
                 document.getElementById('inputVideoFacebook').value = '';
             }
 
-            document.getElementById('inputFecha').value = noticia.fecha || '';
+            document.getElementById('inputFecha').value = noticia.fecha ? String(noticia.fecha).split('T')[0] : '';
             document.getElementById('inputHora').value = noticia.hora || '';
             document.getElementById('inputCuerpo').value = noticia.cuerpo || '';
             window.scrollTo({top: 0, behavior: 'smooth'});
