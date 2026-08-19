@@ -22,15 +22,20 @@ document.addEventListener("DOMContentLoaded", function () {
   inicializarArrastrePlayer();
 });
 
-// MULTIMEDIA UNIVERSAL SEGURO
+// MULTIMEDIA UNIVERSAL BLINDADO (Evita pantallas negras)
 function obtenerHtmlMultimedia(urlVideo, urlImagen) {
   let videoLimpio = urlVideo ? String(urlVideo).trim() : "";
   let imagenLimpia = urlImagen ? String(urlImagen).trim() : "";
 
-  if (videoLimpio !== "" && videoLimpio !== "null" && videoLimpio !== "undefined") {
+  // Validar si realmente hay un link de video válido
+  const esFacebook = videoLimpio.includes("facebook.com/");
+  const esYoutube = videoLimpio.includes("youtube.com/") || videoLimpio.includes("youtu.be/");
+  const esMp4 = videoLimpio.endsWith('.mp4');
+
+  if (videoLimpio !== "" && (esFacebook || esYoutube || esMp4)) {
     
     // 1. Facebook Reel o Video
-    if (videoLimpio.includes("facebook.com/")) {
+    if (esFacebook) {
       let encodedUrl = encodeURIComponent(videoLimpio);
       return `
         <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
@@ -43,22 +48,22 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
         </div>`;
     }
     
-    // 2. YouTube (Normal o Shorts)
-    if (videoLimpio.includes("youtube.com/") || videoLimpio.includes("youtu.be/")) {
+    // 2. YouTube
+    if (esYoutube) {
       let vId = videoLimpio.split(/(v=|shorts\/|youtu\.be\/)/)[2]?.split(/[?&]/)[0];
       if (vId) {
         return `<iframe src="https://www.youtube.com/embed/${vId}" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>`;
       }
     } 
 
-    // 3. Si mandaron un archivo de video directo (.mp4)
-    if (videoLimpio.endsWith('.mp4') || videoLimpio.endsWith('.webm')) {
+    // 3. MP4 Directo
+    if (esMp4) {
       return `<video src="${videoLimpio}" controls style="width: 100%; height: 100%; object-fit: cover; background: #000;"></video>`;
     }
   }
   
-  // Por defecto si no hay video válido, muestra la imagen limpia
-  return `<img src="${imagenLimpia}" alt="Imagen noticia" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.src=''">`;
+  // Si no hay video válido, por seguridad MUESTRA LA IMAGEN para que nunca quede en negro
+  return `<img src="${imagenLimpia}" alt="Imagen noticia" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.src='' ">`;
 }
 
 function renderizarNoticias(listaParaPintar) {
@@ -163,7 +168,9 @@ function abrirNoticiaModal(noticia) {
 
   const modalImagenElem = document.getElementById('modal-imagen');
   if (modalImagenElem) {
-    let multimediaModalHtml = obtenerHtmlMultimedia(noticia.video || noticia.Video, noticia.imagen || noticia.Imagen);
+    let videoLimpio = noticia.video || noticia.Video;
+    let esVidValido = videoLimpio && (videoLimpio.includes('facebook.com/') || videoLimpio.includes('youtube.com/') || videoLimpio.includes('youtu.be/'));
+
     let parentModalImg = modalImagenElem.parentNode;
     let videoContainerModal = document.getElementById('modal-video-container');
 
@@ -177,9 +184,8 @@ function abrirNoticiaModal(noticia) {
       parentModalImg.insertBefore(videoContainerModal, modalImagenElem);
     }
 
-    let videoLimpio = noticia.video || noticia.Video;
-    if (videoLimpio && String(videoLimpio).trim() !== "" && String(videoLimpio).trim() !== "null") {
-      videoContainerModal.innerHTML = multimediaModalHtml;
+    if (esVidValido) {
+      videoContainerModal.innerHTML = obtenerHtmlMultimedia(videoLimpio, noticia.imagen || noticia.Imagen);
       modalImagenElem.style.display = 'none';
     } else {
       videoContainerModal.innerHTML = '';
