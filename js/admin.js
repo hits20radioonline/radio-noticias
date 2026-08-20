@@ -54,12 +54,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert("Hubo un error al procesar la solicitud.");
                 }
             })
-            .catch(err => console.error("Error:", err));
+            .catch(err => console.error("Error en POST:", err));
         });
     }
 });
 
-// Función unificada y blindada para limpiar la fecha y hora de forma exacta
+// Función para limpiar la fecha y hora de forma exacta
 function formatearFechaYHora(fechaCruda, horaCruda) {
   if (!fechaCruda) return '';
 
@@ -92,58 +92,76 @@ function formatearFechaYHora(fechaCruda, horaCruda) {
 }
 
 function cargarNoticiasAdmin() {
-    fetch(urlAPI)
-        .then(res => res.json())
-        .then(data => {
-            console.log("Datos recibidos de la API:", data);
+    const tbody = document.getElementById('lista-admin-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #555;">Cargando publicaciones...</td></tr>';
 
-            const tbody = document.getElementById('lista-admin-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
+    fetch(urlAPI, {
+        method: "GET",
+        mode: "cors"
+    })
+    .then(res => res.text()) // Primero lo leemos como texto para evitar errores de parseo si Google devuelve HTML de error
+    .then(texto => {
+        let data;
+        try {
+            data = JSON.parse(texto);
+        } catch (e) {
+            console.error("La API no devolvió un JSON válido:", texto);
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #d9534f;">Error: La API no devolvió datos válidos.</td></tr>';
+            return;
+        }
 
-            let noticiasArray = [];
-            if (Array.isArray(data)) {
-                noticiasArray = data;
-            } else if (data && Array.isArray(data.noticias)) {
-                noticiasArray = data.noticias;
-            } else if (data && Array.isArray(data.data)) {
-                noticiasArray = data.data;
-            } else if (data) {
-                noticiasArray = Object.values(data).find(val => Array.isArray(val)) || [];
-            }
+        console.log("Datos recibidos de la API:", data);
 
-            if (noticiasArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #777;">No hay noticias registradas.</td></tr>';
-                return;
-            }
+        tbody.innerHTML = '';
 
-            // Invertimos para mostrar las publicaciones más recientes primero (sin recortar para que veas todas las que tengas)
-            const noticiasOrdenadas = [...noticiasArray].reverse();
+        let noticiasArray = [];
+        if (Array.isArray(data)) {
+            noticiasArray = data;
+        } else if (data && Array.isArray(data.noticias)) {
+            noticiasArray = data.noticias;
+        } else if (data && Array.isArray(data.data)) {
+            noticiasArray = data.data;
+        } else if (data) {
+            noticiasArray = Object.values(data).find(val => Array.isArray(val)) || [];
+        }
 
-            noticiasOrdenadas.forEach(noticia => {
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #ddd';
-                
-                let fechaHoraTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
-                if (!fechaHoraTexto) fechaHoraTexto = 'Sin fecha';
+        if (noticiasArray.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #777;">No hay noticias registradas.</td></tr>';
+            return;
+        }
 
-                const tituloNoticia = noticia.titulo || noticia.Titulo || 'Sin título';
-                const categoriaNoticia = noticia.categoria || noticia.Categoria || 'Sin categoría';
-                const idNoticia = noticia.id || noticia.ID || '';
+        // Invertimos para mostrar las publicaciones más recientes primero
+        const noticiasOrdenadas = [...noticiasArray].reverse();
 
-                tr.innerHTML = `
-                    <td style="padding: 10px;">${fechaHoraTexto}</td>
-                    <td style="padding: 10px; font-weight: bold;">${tituloNoticia}</td>
-                    <td style="padding: 10px; text-transform: capitalize;">${categoriaNoticia}</td>
-                    <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
-                        <button type="button" onclick='prepararEdicion(${JSON.stringify(noticia)})' style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Editar</button>
-                        <button type="button" onclick="borrarNoticia('${idNoticia}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        })
-        .catch(err => console.error("Error al cargar noticias:", err));
+        noticiasOrdenadas.forEach(noticia => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #ddd';
+            
+            let fechaHoraTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
+            if (!fechaHoraTexto) fechaHoraTexto = 'Sin fecha';
+
+            const tituloNoticia = noticia.titulo || noticia.Titulo || 'Sin título';
+            const categoriaNoticia = noticia.categoria || noticia.Categoria || 'Sin categoría';
+            const idNoticia = noticia.id || noticia.ID || '';
+
+            tr.innerHTML = `
+                <td style="padding: 10px;">${fechaHoraTexto}</td>
+                <td style="padding: 10px; font-weight: bold;">${tituloNoticia}</td>
+                <td style="padding: 10px; text-transform: capitalize;">${categoriaNoticia}</td>
+                <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
+                    <button type="button" onclick='prepararEdicion(${JSON.stringify(noticia)})' style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Editar</button>
+                    <button type="button" onclick="borrarNoticia('${idNoticia}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    })
+    .catch(err => {
+        console.error("Error al cargar noticias:", err);
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #d9534f;">Error de conexión con la API.</td></tr>';
+    });
 }
 
 function prepararEdicion(noticia) {
