@@ -95,14 +95,30 @@ function cargarNoticiasAdmin() {
     fetch(urlAPI)
         .then(res => res.json())
         .then(data => {
+            console.log("Datos recibidos de la API:", data);
+
             const tbody = document.getElementById('lista-admin-body');
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            if (!Array.isArray(data)) return;
+            let noticiasArray = [];
+            if (Array.isArray(data)) {
+                noticiasArray = data;
+            } else if (data && Array.isArray(data.noticias)) {
+                noticiasArray = data.noticias;
+            } else if (data && Array.isArray(data.data)) {
+                noticiasArray = data.data;
+            } else if (data) {
+                noticiasArray = Object.values(data).find(val => Array.isArray(val)) || [];
+            }
+
+            if (noticiasArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #777;">No hay noticias registradas.</td></tr>';
+                return;
+            }
 
             // Se obtienen las últimas 3 noticias y se invierten para mostrar la más reciente arriba
-            const ultimasTres = data.slice(-3).reverse();
+            const ultimasTres = noticiasArray.slice(-3).reverse();
 
             ultimasTres.forEach(noticia => {
                 const tr = document.createElement('tr');
@@ -113,11 +129,11 @@ function cargarNoticiasAdmin() {
 
                 tr.innerHTML = `
                     <td style="padding: 10px;">${fechaHoraTexto}</td>
-                    <td style="padding: 10px; font-weight: bold;">${noticia.titulo || ''}</td>
-                    <td style="padding: 10px; text-transform: capitalize;">${noticia.categoria || ''}</td>
+                    <td style="padding: 10px; font-weight: bold;">${noticia.titulo || noticia.Titulo || ''}</td>
+                    <td style="padding: 10px; text-transform: capitalize;">${noticia.categoria || noticia.Categoria || ''}</td>
                     <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
                         <button type="button" onclick='prepararEdicion(${JSON.stringify(noticia)})' style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Editar</button>
-                        <button type="button" onclick="borrarNoticia('${noticia.id}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
+                        <button type="button" onclick="borrarNoticia('${noticia.id || noticia.ID}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -127,22 +143,25 @@ function cargarNoticiasAdmin() {
 }
 
 function prepararEdicion(noticia) {
-    document.getElementById('noticia-id').value = noticia.id || '';
-    document.getElementById('admin-titulo').value = noticia.titulo || '';
+    document.getElementById('noticia-id').value = noticia.id || noticia.ID || '';
+    document.getElementById('admin-titulo').value = noticia.titulo || noticia.Titulo || '';
     document.getElementById('admin-imagen').value = noticia.imagen || noticia.Imagen || '';
     
     const campoVideo = document.getElementById('admin-video');
     if (campoVideo) campoVideo.value = noticia.video || noticia.Video || '';
     
-    document.getElementById('admin-categoria').value = (noticia.categoria || '').trim().toLowerCase();
-    document.getElementById('admin-cuerpo').value = noticia.cuerpo || '';
+    document.getElementById('admin-categoria').value = (noticia.categoria || noticia.Categoria || '').trim().toLowerCase();
+    document.getElementById('admin-cuerpo').value = noticia.cuerpo || noticia.Cuerpo || '';
     
-    if (noticia.fecha || noticia.Fecha) {
-        let f = String(noticia.fecha || noticia.Fecha).split('T')[0];
+    const fechaCruda = noticia.fecha || noticia.Fecha;
+    if (fechaCruda) {
+        let f = String(fechaCruda).split('T')[0];
         document.getElementById('admin-fecha').value = f;
     }
-    if (noticia.hora || noticia.Hora) {
-        let h = String(noticia.hora || noticia.Hora);
+    
+    const horaCruda = noticia.hora || noticia.Hora;
+    if (horaCruda) {
+        let h = String(horaCruda);
         if (h.includes('T')) {
             const p = h.split('T')[1];
             h = p ? p.substring(0, 5) : h;
