@@ -1,75 +1,58 @@
 const urlAPI = "https://script.google.com/macros/s/AKfycbzrN4pskes2eTBGxvuvsPFuKcm3VoIeUyc4FJGG962DkdMf2MYQYSkhBzji40oRmH1p/exec";
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Carga inicial de noticias al abrir la página
     cargarNoticiasAdmin();
 
-    // Enlace directo y seguro al botón de Actualizar
-    const btnActualizar = document.getElementById('btn-actualizar');
-    if (btnActualizar) {
-        btnActualizar.addEventListener('click', function () {
-            cargarNoticiasAdmin();
-        });
-    }
+    document.getElementById('form-admin-noticia').addEventListener('submit', function (e) {
+        e.preventDefault();
+        
+        const id = document.getElementById('noticia-id').value;
+        const titulo = document.getElementById('admin-titulo').value;
+        const imagen = document.getElementById('admin-imagen').value;
+        const categoria = document.getElementById('admin-categoria').value.trim().toLowerCase();
+        const cuerpo = document.getElementById('admin-cuerpo').value;
+        
+        let fecha = document.getElementById('admin-fecha').value;
+        let hora = document.getElementById('admin-hora').value;
 
-    // Manejador del formulario para Crear o Actualizar noticias
-    const form = document.getElementById('form-admin-noticia');
-    if (form) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            
-            const id = document.getElementById('noticia-id').value;
-            const titulo = document.getElementById('admin-titulo').value;
-            const imagen = document.getElementById('admin-imagen').value;
-            const video = document.getElementById('admin-video') ? document.getElementById('admin-video').value : '';
-            const categoria = document.getElementById('admin-categoria').value.trim().toLowerCase();
-            const cuerpo = document.getElementById('admin-cuerpo').value;
-            
-            let fecha = document.getElementById('admin-fecha').value;
-            let hora = document.getElementById('admin-hora').value;
+        if (fecha && fecha.includes('T')) {
+            fecha = fecha.split('T')[0];
+        }
+        if (hora && hora.includes('T')) {
+            const partesHora = hora.split('T')[1];
+            hora = partesHora ? partesHora.substring(0, 5) : hora;
+        }
 
-            if (fecha && fecha.includes('T')) {
-                fecha = fecha.split('T')[0];
+        const action = id ? "update" : "create";
+        const datos = { action, id, titulo, imagen, categoria, cuerpo, fecha, hora };
+
+        fetch(urlAPI, {
+            method: 'POST',
+            body: JSON.stringify(datos)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.resultado === "success") {
+                alert(id ? "Noticia actualizada con éxito" : "Noticia publicada con éxito");
+                
+                const noticiaIdFinal = id || data.id;
+                const baseUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+                const linkCompleto = `${baseUrl}?id=${noticiaIdFinal}`;
+
+                document.getElementById('input-link-compartir').value = linkCompleto;
+                document.getElementById('resultado-publicacion').style.display = 'block';
+
+                limpiarFormulario();
+                cargarNoticiasAdmin();
+            } else {
+                alert("Hubo un error al procesar la solicitud.");
             }
-            if (hora && hora.includes('T')) {
-                const partesHora = hora.split('T')[1];
-                hora = partesHora ? partesHora.substring(0, 5) : hora;
-            }
-
-            const action = id ? "update" : "create";
-            const datos = { action, id, titulo, imagen, video, categoria, cuerpo, fecha, hora };
-
-            fetch(urlAPI, {
-                method: 'POST',
-                body: JSON.stringify(datos)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.resultado === "success") {
-                    alert(id ? "Noticia actualizada con éxito" : "Noticia publicada con éxito");
-                    
-                    const noticiaIdFinal = id || data.id;
-                    const baseUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
-                    const linkCompleto = `${baseUrl}?id=${noticiaIdFinal}`;
-
-                    const inputLink = document.getElementById('input-link-compartir');
-                    if (inputLink) inputLink.value = linkCompleto;
-                    
-                    const resBox = document.getElementById('resultado-publicacion');
-                    if (resBox) resBox.style.display = 'block';
-
-                    limpiarFormulario();
-                    cargarNoticiasAdmin();
-                } else {
-                    alert("Hubo un error al procesar la solicitud.");
-                }
-            })
-            .catch(err => console.error("Error en POST:", err));
-        });
-    }
+        })
+        .catch(err => console.error("Error:", err));
+    });
 });
 
-// Función para limpiar la fecha y hora de forma exacta
+// Función unificada y blindada para limpiar la fecha y hora de forma exacta
 function formatearFechaYHora(fechaCruda, horaCruda) {
   if (!fechaCruda) return '';
 
@@ -101,101 +84,52 @@ function formatearFechaYHora(fechaCruda, horaCruda) {
   return horaFinal ? `${fechaLimpia} - ${horaFinal}` : fechaLimpia;
 }
 
-// Función encargada de solicitar y renderizar las noticias en la tabla
 function cargarNoticiasAdmin() {
-    const tbody = document.getElementById('lista-admin-body');
-    if (!tbody) return;
-    
-    // Indicador visual en la tabla mientras procesa la petición
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #555;">Cargando publicaciones...</td></tr>';
+    fetch(urlAPI)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('lista-admin-body');
+            tbody.innerHTML = '';
 
-    fetch(urlAPI, {
-        method: "GET",
-        mode: "cors"
-    })
-    .then(res => res.text())
-    .then(texto => {
-        let data;
-        try {
-            data = JSON.parse(texto);
-        } catch (e) {
-            console.error("La API no devolvió un JSON válido:", texto);
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #d9534f;">Error: La API no devolvió datos válidos.</td></tr>';
-            return;
-        }
+            if (!Array.isArray(data)) return;
 
-        console.log("Datos recibidos de la API:", data);
+            const ultimasDos = data.slice(-2);
 
-        tbody.innerHTML = '';
+            ultimasDos.forEach(noticia => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #ddd';
+                
+                // Usamos la función blindada para evitar cualquier desfase de zona horaria (-0416)
+                let fechaHoraTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
+                if (!fechaHoraTexto) fechaHoraTexto = 'Sin fecha';
 
-        let noticiasArray = [];
-        if (Array.isArray(data)) {
-            noticiasArray = data;
-        } else if (data && Array.isArray(data.noticias)) {
-            noticiasArray = data.noticias;
-        } else if (data && Array.isArray(data.data)) {
-            noticiasArray = data.data;
-        } else if (data) {
-            noticiasArray = Object.values(data).find(val => Array.isArray(val)) || [];
-        }
-
-        if (noticiasArray.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #777;">No hay noticias registradas.</td></tr>';
-            return;
-        }
-
-        // Invertimos para mostrar las publicaciones más recientes primero
-        const noticiasOrdenadas = [...noticiasArray].reverse();
-
-        noticiasOrdenadas.forEach(noticia => {
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #ddd';
-            
-            let fechaHoraTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
-            if (!fechaHoraTexto) fechaHoraTexto = 'Sin fecha';
-
-            const tituloNoticia = noticia.titulo || noticia.Titulo || 'Sin título';
-            const categoriaNoticia = noticia.categoria || noticia.Categoria || 'Sin categoría';
-            const idNoticia = noticia.id || noticia.ID || '';
-
-            tr.innerHTML = `
-                <td style="padding: 10px;">${fechaHoraTexto}</td>
-                <td style="padding: 10px; font-weight: bold;">${tituloNoticia}</td>
-                <td style="padding: 10px; text-transform: capitalize;">${categoriaNoticia}</td>
-                <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
-                    <button type="button" onclick='prepararEdicion(${JSON.stringify(noticia)})' style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Editar</button>
-                    <button type="button" onclick="borrarNoticia('${idNoticia}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
+                tr.innerHTML = `
+                    <td style="padding: 10px;">${fechaHoraTexto}</td>
+                    <td style="padding: 10px; font-weight: bold;">${noticia.titulo || ''}</td>
+                    <td style="padding: 10px; text-transform: capitalize;">${noticia.categoria || ''}</td>
+                    <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
+                        <button onclick='prepararEdicion(${JSON.stringify(noticia)})' style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Editar</button>
+                        <button onclick="borrarNoticia('${noticia.id}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         });
-    })
-    .catch(err => {
-        console.error("Error al cargar noticias:", err);
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #d9534f;">Error de conexión con la API.</td></tr>';
-    });
 }
 
 function prepararEdicion(noticia) {
-    document.getElementById('noticia-id').value = noticia.id || noticia.ID || '';
-    document.getElementById('admin-titulo').value = noticia.titulo || noticia.Titulo || '';
-    document.getElementById('admin-imagen').value = noticia.imagen || noticia.Imagen || '';
+    document.getElementById('noticia-id').value = noticia.id;
+    document.getElementById('admin-titulo').value = noticia.titulo;
+    document.getElementById('admin-imagen').value = noticia.imagen;
+    document.getElementById('admin-categoria').value = (noticia.categoria || '').trim().toLowerCase();
+    document.getElementById('admin-cuerpo').value = noticia.cuerpo;
     
-    const campoVideo = document.getElementById('admin-video');
-    if (campoVideo) campoVideo.value = noticia.video || noticia.Video || '';
-    
-    document.getElementById('admin-categoria').value = (noticia.categoria || noticia.Categoria || '').trim().toLowerCase();
-    document.getElementById('admin-cuerpo').value = noticia.cuerpo || noticia.Cuerpo || '';
-    
-    const fechaCruda = noticia.fecha || noticia.Fecha;
-    if (fechaCruda) {
-        let f = String(fechaCruda).split('T')[0];
+    if (noticia.fecha) {
+        let f = String(noticia.fecha).split('T')[0];
         document.getElementById('admin-fecha').value = f;
     }
-    
-    const horaCruda = noticia.hora || noticia.Hora;
-    if (horaCruda) {
-        let h = String(horaCruda);
+    if (noticia.hora) {
+        let h = String(noticia.hora);
         if (h.includes('T')) {
             const p = h.split('T')[1];
             h = p ? p.substring(0, 5) : h;
@@ -209,8 +143,7 @@ function prepararEdicion(noticia) {
 }
 
 function limpiarFormulario() {
-    const form = document.getElementById('form-admin-noticia');
-    if (form) form.reset();
+    document.getElementById('form-admin-noticia').reset();
     document.getElementById('noticia-id').value = '';
     document.getElementById('btn-guardar').innerText = "Publicar Noticia";
     document.getElementById('btn-cancelar-edicion').style.display = 'none';
@@ -237,13 +170,10 @@ function borrarNoticia(id) {
 
 function copiarLinkNoticia() {
     const inputLink = document.getElementById('input-link-compartir');
-    if (!inputLink) return;
     inputLink.select();
     navigator.clipboard.writeText(inputLink.value);
 
     const aviso = document.getElementById('copiado-aviso');
-    if (aviso) {
-        aviso.style.display = 'block';
-        setTimeout(() => { aviso.style.display = 'none'; }, 3000);
-    }
+    aviso.style.display = 'block';
+    setTimeout(() => { aviso.style.display = 'none'; }, 3000);
 }
