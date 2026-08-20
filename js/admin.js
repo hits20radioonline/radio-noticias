@@ -1,8 +1,18 @@
 const urlAPI = "https://script.google.com/macros/s/AKfycbzrN4pskes2eTBGxvuvsPFuKcm3VoIeUyc4FJGG962DkdMf2MYQYSkhBzji40oRmH1p/exec";
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Carga inicial de noticias al abrir la página
     cargarNoticiasAdmin();
 
+    // Enlace directo y seguro al botón de Actualizar
+    const btnActualizar = document.getElementById('btn-actualizar');
+    if (btnActualizar) {
+        btnActualizar.addEventListener('click', function () {
+            cargarNoticiasAdmin();
+        });
+    }
+
+    // Manejador del formulario para Crear o Actualizar noticias
     const form = document.getElementById('form-admin-noticia');
     if (form) {
         form.addEventListener('submit', function (e) {
@@ -91,17 +101,19 @@ function formatearFechaYHora(fechaCruda, horaCruda) {
   return horaFinal ? `${fechaLimpia} - ${horaFinal}` : fechaLimpia;
 }
 
+// Función encargada de solicitar y renderizar las noticias en la tabla
 function cargarNoticiasAdmin() {
     const tbody = document.getElementById('lista-admin-body');
     if (!tbody) return;
     
+    // Indicador visual en la tabla mientras procesa la petición
     tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 15px; color: #555;">Cargando publicaciones...</td></tr>';
 
     fetch(urlAPI, {
         method: "GET",
         mode: "cors"
     })
-    .then(res => res.text()) // Primero lo leemos como texto para evitar errores de parseo si Google devuelve HTML de error
+    .then(res => res.text())
     .then(texto => {
         let data;
         try {
