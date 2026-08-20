@@ -12,34 +12,46 @@
         <h2>Panel de Administración de Noticias</h2>
         
         <form id="form-noticia">
-            <label for="titulo">Título de la Noticia:</label>
-            <input type="text" id="titulo" required>
+            <div class="form-group">
+                <label for="titulo">Título de la Noticia:</label>
+                <input type="text" id="titulo" class="form-control" required>
+            </div>
 
-            <label for="categoria">Categoría:</label>
-            <select id="categoria" required>
-                <option value="Provincial">Provincial</option>
-                <option value="Nacional">Nacional</option>
-                <option value="Internacional">Internacional</option>
-                <option value="Los Hits 20">Los Hits 20</option>
-            </select>
+            <div class="form-group">
+                <label for="categoria">Categoría:</label>
+                <select id="categoria" class="form-control" required>
+                    <option value="Provincial">Provincial</option>
+                    <option value="Nacional">Nacional</option>
+                    <option value="Internacional">Internacional</option>
+                    <option value="Los Hits 20">Los Hits 20</option>
+                </select>
+            </div>
 
-            <label for="video">URL del Video (Opcional):</label>
-            <input type="text" id="video" placeholder="https://www.youtube.com/watch?v=...">
+            <div class="form-group">
+                <label for="video">URL del Video (Opcional):</label>
+                <input type="text" id="video" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
 
-            <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="hora">Hora:</label>
+                    <input type="time" id="hora" class="form-control" required>
+                </div>
+            </div>
 
-            <label for="hora">Hora:</label>
-            <input type="time" id="hora" required>
+            <div class="form-group">
+                <label for="cuerpo">Cuerpo de la Noticia:</label>
+                <textarea id="cuerpo" class="form-control" rows="10" required></textarea>
+            </div>
 
-            <label for="cuerpo">Cuerpo de la Noticia:</label>
-            <textarea id="cuerpo" rows="10" required></textarea>
-
-            <button type="submit">Guardar Noticia</button>
+            <button type="submit" class="btn-guardar">Guardar Noticia</button>
         </form>
     </div>
 
-    <!-- Script para enviar datos a tu Google Apps Script -->
     <script>
         document.getElementById('form-noticia').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -52,7 +64,6 @@
                 cuerpo: document.getElementById('cuerpo').value
             };
             
-            // Reemplaza esta URL con tu endpoint real de Google Apps Script
             fetch('https://script.google.com/macros/s/AKfycbzrN4pskes2eTBGxvuvsPFuKcm3VoIeUyc4FJGG962DkdMf2MYQYSkhBzji40oRmH1p/exec', {
                 method: 'POST',
                 mode: 'no-cors',
