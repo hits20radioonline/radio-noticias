@@ -32,13 +32,15 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
 
   if (videoLimpio !== "" && (esFacebook || esYoutube || esMp4)) {
     if (esFacebook) {
-      let encodedUrl = encodeURIComponent(videoLimpio);
+      let urlCodificada = encodeURIComponent(videoLimpio);
       return `
-        <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+        <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
           <iframe 
-            src="https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false&app_id=" 
-            style="width: 100%; height: 100%; border: none; display: block;" 
-            allowfullscreen 
+            src="https://www.facebook.com/plugins/video.php?href=${urlCodificada}&show_text=false&width=500" 
+            style="width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0;" 
+            scrolling="no" 
+            frameborder="0" 
+            allowfullscreen="true" 
             allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
           </iframe>
         </div>`;
@@ -190,7 +192,6 @@ function abrirNoticiaModal(noticia) {
   const elFecha = document.getElementById('modal-fecha');
   if (elFecha) elFecha.innerText = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
 
-  // Agregar botón de compartir en el modal si existe contenedor o crearlo
   let modalBody = document.querySelector('#modal-noticia .modal-content') || document.getElementById('modal-cuerpo').parentNode;
   let shareContainer = document.getElementById('modal-share-container');
   if (!shareContainer) {
