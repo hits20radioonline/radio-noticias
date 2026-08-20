@@ -23,12 +23,12 @@ document.addEventListener("DOMContentLoaded", function () {
   inicializarArrastrePlayer();
 });
 
-// FUNCIÓN CORREGIDA: Uso de Regex para capturar IDs de video de forma segura
+// Función para manejar multimedia (YouTube, videos directos u otros formatos)
 function obtenerHtmlMultimedia(urlVideo, urlImagen) {
   if (urlVideo && urlVideo.trim() !== "") {
     let videoUrl = urlVideo.trim();
     
-    // Regex para extraer el ID de video de YouTube (maneja youtube.com/watch?v=... y youtu.be/...)
+    // Regex para extraer el ID de video de YouTube
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = videoUrl.match(regExp);
 
@@ -48,10 +48,12 @@ function renderizarNoticias(listaParaPintar) {
   const nacionales = document.getElementById('grid-nacionales');
   const internacionales = document.getElementById('grid-internacionales');
   const provinciales = document.getElementById('grid-provinciales');
+  const losHits20 = document.getElementById('grid-los-hits-20'); // Contenedor actualizado
 
   if (nacionales) nacionales.innerHTML = '';
   if (internacionales) internacionales.innerHTML = '';
   if (provinciales) provinciales.innerHTML = '';
+  if (losHits20) losHits20.innerHTML = ''; // Limpiamos también este contenedor
 
   const ahora = new Date();
   const tresDiasEnMilisegundos = 3 * 24 * 60 * 60 * 1000;
@@ -76,6 +78,8 @@ function renderizarNoticias(listaParaPintar) {
       contenedor = nacionales;
     } else if (categoria.includes('provincial')) {
       contenedor = provinciales;
+    } else if (categoria.includes('los hits 20') || categoria.includes('hits 20') || categoria.includes('hits')) {
+      contenedor = losHits20; // Asignación para la nueva categoría
     }
 
     if (contenedor) {
@@ -110,8 +114,6 @@ function renderizarNoticias(listaParaPintar) {
     }
   });
 }
-
-// ... (El resto de tus funciones: filterNews, formatearFechaYHora, abrirNoticiaModal, cerrarNoticia, abrirPlayer, cerrarPlayer, cambiarVolumen, inicializarArrastrePlayer, cargarOtrasLocalidadesClima se mantienen exactamente igual a como las tenías)
 
 function filterNews() {
   const inputEl = document.getElementById('searchInput');
@@ -153,7 +155,7 @@ function abrirNoticiaModal(noticia) {
   if (modalImagenElem) {
     let multimediaModalHtml = obtenerHtmlMultimedia(noticia.video || noticia.Video, noticia.imagen || noticia.Imagen);
     if (modalImagenElem.tagName === 'IMG') {
-      if (noticia.video && noticia.video.trim() !== "") {
+      if ((noticia.video && noticia.video.trim() !== "") || (noticia.Video && noticia.Video.trim() !== "")) {
         let parentModalImg = modalImagenElem.parentNode;
         let videoContainerModal = document.getElementById('modal-video-container');
         if (!videoContainerModal) {
@@ -255,6 +257,6 @@ function cargarOtrasLocalidadesClima() {
   const gridContainer = document.getElementById('grid-otras-loc');
   if (!gridContainer) return;
   gridContainer.innerHTML = '<div class="weather-item">Cargando localidades...</div>';
-  const localidades = [{ nombre: 'San Luis', lat: -33.3017, lon: -66.3378 }, { nombre: 'Villa Mercedes', lat: -33.6749, lon: -65.4561 }, { nombre: 'Merlo', lat: -32.3481, lon: -65.0122 }]; // (Reducido por brevedad, usa tu lista original)
-  Promise.all(localidades.map(loc => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`).then(res => res.json()).then(data => ({ nombre: loc.nombre, temp: data.current_weather ? Math.round(data.current_weather.temperature) : '--', icono: '☀️' }).catch(() => ({ nombre: loc.nombre, temp: '--', icono: '☁️' }))))).then(resultados => { gridContainer.innerHTML = ''; resultados.forEach(item => { const div = document.createElement('div'); div.className = 'weather-item'; div.innerHTML = `<span>${item.nombre}:</span> <strong>${item.temp}°C ${item.icono}</strong>`; gridContainer.appendChild(div); }); });
+  const localidades = [{ nombre: 'San Luis', lat: -33.3017, lon: -66.3378 }, { nombre: 'Villa Mercedes', lat: -33.6749, lon: -65.4561 }, { nombre: 'Merlo', lat: -32.3481, lon: -65.0122 }];
+  Promise.all(localidades.map(loc => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current_weather=true`).then(res => res.json()).then(data => ({ nombre: loc.nombre, temp: data.current_weather ? Math.round(data.current_weather.temperature) : '--', icono: '☀️' })).catch(() => ({ nombre: loc.nombre, temp: '--', icono: '☁️' })))).then(resultados => { gridContainer.innerHTML = ''; resultados.forEach(item => { const div = document.createElement('div'); div.className = 'weather-item'; div.innerHTML = `<span>${item.nombre}:</span> <strong>${item.temp}°C ${item.icono}</strong>`; gridContainer.appendChild(div); }); });
 }
