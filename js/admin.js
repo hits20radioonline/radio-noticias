@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const id = document.getElementById('noticia-id').value;
         const titulo = document.getElementById('admin-titulo').value;
         const imagen = document.getElementById('admin-imagen').value;
+        const video = document.getElementById('admin-video').value; // <--- 1. Capturamos el video
         const categoria = document.getElementById('admin-categoria').value.trim().toLowerCase();
         const cuerpo = document.getElementById('admin-cuerpo').value;
         
@@ -24,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const action = id ? "update" : "create";
-        const datos = { action, id, titulo, imagen, categoria, cuerpo, fecha, hora };
+        const datos = { action, id, titulo, imagen, video, categoria, cuerpo, fecha, hora }; // <--- 2. Lo incluimos aquí
 
         fetch(urlAPI, {
             method: 'POST',
@@ -99,7 +100,6 @@ function cargarNoticiasAdmin() {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #ddd';
                 
-                // Usamos la función blindada para evitar cualquier desfase de zona horaria (-0416)
                 let fechaHoraTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
                 if (!fechaHoraTexto) fechaHoraTexto = 'Sin fecha';
 
@@ -121,6 +121,7 @@ function prepararEdicion(noticia) {
     document.getElementById('noticia-id').value = noticia.id;
     document.getElementById('admin-titulo').value = noticia.titulo;
     document.getElementById('admin-imagen').value = noticia.imagen;
+    document.getElementById('admin-video').value = noticia.video || noticia.Video || ''; // <--- 3. Carga el video al editar
     document.getElementById('admin-categoria').value = (noticia.categoria || '').trim().toLowerCase();
     document.getElementById('admin-cuerpo').value = noticia.cuerpo;
     
