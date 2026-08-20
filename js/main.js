@@ -26,24 +26,10 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
   let videoLimpio = urlVideo ? String(urlVideo).trim() : "";
   let imagenLimpia = urlImagen ? String(urlImagen).trim() : "";
 
-  const esFacebook = videoLimpio.includes("facebook.com/");
   const esYoutube = videoLimpio.includes("youtube.com/") || videoLimpio.includes("youtu.be/");
   const esMp4 = videoLimpio.endsWith('.mp4');
 
-  if (videoLimpio !== "" && (esFacebook || esYoutube || esMp4)) {
-    if (esFacebook) {
-      let encodedUrl = encodeURIComponent(videoLimpio);
-      return `
-        <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-          <iframe 
-            src="https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false&app_id=" 
-            style="width: 100%; height: 100%; border: none; display: block;" 
-            allowfullscreen 
-            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-          </iframe>
-        </div>`;
-    }
-    
+  if (videoLimpio !== "" && (esYoutube || esMp4)) {
     if (esYoutube) {
       let vId = videoLimpio.split(/(v=|shorts\/|youtu\.be\/)/)[2]?.split(/[?&]/)[0];
       if (vId) {
@@ -162,7 +148,7 @@ function abrirNoticiaModal(noticia) {
   const modalImagenElem = document.getElementById('modal-imagen');
   if (modalImagenElem) {
     let videoLimpio = noticia.video || noticia.Video;
-    let esVidValido = videoLimpio && (videoLimpio.includes('facebook.com/') || videoLimpio.includes('youtube.com/') || videoLimpio.includes('youtu.be/') || videoLimpio.endsWith('.mp4'));
+    let esVidValido = videoLimpio && (videoLimpio.includes('youtube.com/') || videoLimpio.includes('youtu.be/') || videoLimpio.endsWith('.mp4'));
 
     let parentModalImg = modalImagenElem.parentNode;
     let videoContainerModal = document.getElementById('modal-video-container');
