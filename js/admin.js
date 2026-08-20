@@ -117,23 +117,27 @@ function cargarNoticiasAdmin() {
                 return;
             }
 
-            // Se obtienen las últimas 3 noticias y se invierten para mostrar la más reciente arriba
-            const ultimasTres = noticiasArray.slice(-3).reverse();
+            // Invertimos para mostrar las publicaciones más recientes primero (sin recortar para que veas todas las que tengas)
+            const noticiasOrdenadas = [...noticiasArray].reverse();
 
-            ultimasTres.forEach(noticia => {
+            noticiasOrdenadas.forEach(noticia => {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #ddd';
                 
                 let fechaHoraTexto = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
                 if (!fechaHoraTexto) fechaHoraTexto = 'Sin fecha';
 
+                const tituloNoticia = noticia.titulo || noticia.Titulo || 'Sin título';
+                const categoriaNoticia = noticia.categoria || noticia.Categoria || 'Sin categoría';
+                const idNoticia = noticia.id || noticia.ID || '';
+
                 tr.innerHTML = `
                     <td style="padding: 10px;">${fechaHoraTexto}</td>
-                    <td style="padding: 10px; font-weight: bold;">${noticia.titulo || noticia.Titulo || ''}</td>
-                    <td style="padding: 10px; text-transform: capitalize;">${noticia.categoria || noticia.Categoria || ''}</td>
+                    <td style="padding: 10px; font-weight: bold;">${tituloNoticia}</td>
+                    <td style="padding: 10px; text-transform: capitalize;">${categoriaNoticia}</td>
                     <td style="padding: 10px; text-align: center; display: flex; gap: 8px; justify-content: center;">
                         <button type="button" onclick='prepararEdicion(${JSON.stringify(noticia)})' style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Editar</button>
-                        <button type="button" onclick="borrarNoticia('${noticia.id || noticia.ID}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
+                        <button type="button" onclick="borrarNoticia('${idNoticia}')" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Borrar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
