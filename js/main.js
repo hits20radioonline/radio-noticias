@@ -32,15 +32,13 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
 
   if (videoLimpio !== "" && (esFacebook || esYoutube || esMp4)) {
     if (esFacebook) {
-      let urlCodificada = encodeURIComponent(videoLimpio);
+      let encodedUrl = encodeURIComponent(videoLimpio);
       return `
-        <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
           <iframe 
-            src="https://www.facebook.com/plugins/video.php?href=${urlCodificada}&show_text=false&width=500" 
-            style="width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0;" 
-            scrolling="no" 
-            frameborder="0" 
-            allowfullscreen="true" 
+            src="https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false&app_id=" 
+            style="width: 100%; height: 100%; border: none; display: block;" 
+            allowfullscreen 
             allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
           </iframe>
         </div>`;
