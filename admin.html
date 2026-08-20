@@ -7,7 +7,10 @@
     <style>
         body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
         .admin-container { max-width: 700px; background: #fff; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        h2 { border-bottom: 2px solid #d9534f; padding-bottom: 10px; color: #222; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-volver { background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: bold; }
+        .btn-volver:hover { background: #333; }
+        h2 { border-bottom: 2px solid #d9534f; padding-bottom: 10px; color: #222; margin-top: 0; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; }
@@ -24,7 +27,10 @@
 <body>
 
     <div class="admin-container">
-        <h2>Panel de Administración de Noticias</h2>
+        <div class="top-bar">
+            <h2>Panel de Administración</h2>
+            <a href="index.html" class="btn-volver">← Volver al Portal</a>
+        </div>
         
         <form id="formNoticia">
             <input type="hidden" id="inputEditId">
@@ -108,7 +114,6 @@
                     
                     data.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
 
-                    // Muestra estrictamente solo las últimas 3
                     data.slice(0, 3).forEach(noticia => {
                         let fechaLimpia = noticia.fecha ? String(noticia.fecha).split('T')[0] : '';
                         let horaLimpia = noticia.hora ? String(noticia.hora) : '';
