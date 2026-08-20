@@ -34,7 +34,7 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
     if (esFacebook) {
       let urlCodificada = encodeURIComponent(videoLimpio);
       return `
-        <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+        <div style="width: 100%; height: 100%; background: #000; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
           <iframe 
             src="https://www.facebook.com/plugins/video.php?href=${urlCodificada}&show_text=false&width=500" 
             style="width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0;" 
