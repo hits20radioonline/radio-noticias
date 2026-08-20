@@ -3,203 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración de Noticias</title>
+    <title>Panel de Administración - Radio Noticias</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
-        .admin-container { max-width: 700px; background: #fff; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-volver { background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; font-weight: bold; }
-        .btn-volver:hover { background: #333; }
-        h2 { border-bottom: 2px solid #d9534f; padding-bottom: 10px; color: #222; margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; }
-        textarea { height: 120px; resize: vertical; }
-        .btn-submit { background: #d9534f; color: #fff; border: none; padding: 12px; width: 100%; font-size: 1rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        .btn-submit:hover { background: #c9302c; }
-        table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 0.85rem; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #222; color: #fff; }
-        .btn-editar { background: #f0ad4e; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
-        .btn-borrar { background: #d9534f; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2, h3 {
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        input, select, textarea {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            height: 120px;
+        }
+        button[type="submit"] {
+            background: #d9534f;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background: #c9302c;
+        }
+        .btn-secundario {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+        }
+        th {
+            background: #222;
+            color: white;
+        }
+        .admin-header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        #resultado-publicacion {
+            display: none;
+            background: #e9f7ef;
+            border: 1px solid #2ecc71;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="admin-container">
-        <div class="top-bar">
-            <h2>Panel de Administración</h2>
-            <a href="index.html" class="btn-volver">← Volver al Portal</a>
+<div class="container">
+    <h2>Panel de Administración de Noticias</h2>
+
+    <!-- Resultado o Link de Compartir al publicar -->
+    <div id="resultado-publicacion">
+        <p style="margin: 0 0 8px 0; font-weight: bold; color: #27ae60;">¡Operación realizada con éxito!</p>
+        <label for="input-link-compartir">Enlace directo de la noticia:</label>
+        <div style="display: flex; gap: 8px; margin-top: 5px;">
+            <input type="text" id="input-link-compartir" readonly style="background: #fff;">
+            <button type="button" onclick="copiarLinkNoticia()" style="background: #2ecc71; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Copiar</button>
         </div>
-        
-        <form id="formNoticia">
-            <input type="hidden" id="inputEditId">
-
-            <div class="form-group">
-                <label>Título de la Noticia:</label>
-                <input type="text" id="inputTitulo" required placeholder="Escribe el título...">
-            </div>
-
-            <div class="form-group">
-                <label>Categoría:</label>
-                <select id="inputCategoria">
-                    <option value="Provincial">Provincial</option>
-                    <option value="Nacional">Nacional</option>
-                    <option value="Internacional">Internacional</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>URL de la Imagen:</label>
-                <input type="text" id="inputImagen" placeholder="https://...">
-            </div>
-
-            <div class="form-group">
-                <label>URL del Video de YouTube (Opcional):</label>
-                <input type="text" id="inputVideoYoutube" placeholder="https://www.youtube.com/watch?v=...">
-            </div>
-
-            <div class="form-group">
-                <label style="color: #1877f2;">URL de Facebook Reel / Video (Opcional):</label>
-                <input type="text" id="inputVideoFacebook" placeholder="https://www.facebook.com/reel/...">
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <div class="form-group" style="flex: 1;">
-                    <label>Fecha:</label>
-                    <input type="date" id="inputFecha">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Hora:</label>
-                    <input type="time" id="inputHora">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Cuerpo de la Noticia:</label>
-                <textarea id="inputCuerpo" placeholder="Escribe el contenido completo..."></textarea>
-            </div>
-
-            <button type="button" class="btn-submit" onclick="publicarNoticia()">Publicar Noticia</button>
-        </form>
-
-        <h3 style="margin-top: 30px;">Últimas 3 Noticias Publicadas</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Fecha y Hora</th>
-                    <th>Título</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-ultimas-noticias">
-                <!-- Se llena automáticamente con las últimas 3 -->
-            </tbody>
-        </table>
+        <span id="copiado-aviso" style="display:none; color: #27ae60; font-size: 0.8rem; margin-top: 5px;">¡Enlace copiado al portapapeles!</span>
     </div>
 
-    <script>
-        const urlAPI = "https://script.google.com/macros/s/AKfycbzrN4pskes2eTBGxvuvsPFuKcm3VoIeUyc4FJGG962DkdMf2MYQYSkhBzji40oRmH1p/exec";
+    <!-- Formulario de Creación / Edición -->
+    <form id="form-admin-noticia">
+        <input type="hidden" id="noticia-id">
 
-        document.addEventListener("DOMContentLoaded", cargarNoticiasAdmin);
+        <div>
+            <label for="admin-titulo">Título de la Noticia:</label>
+            <input type="text" id="admin-titulo" required placeholder="Escribe el título...">
+        </div>
 
-        function cargarNoticiasAdmin() {
-            fetch(urlAPI)
-                .then(res => res.json())
-                .then(data => {
-                    if (!Array.isArray(data)) return;
-                    const tbody = document.getElementById('tabla-ultimas-noticias');
-                    tbody.innerHTML = '';
-                    
-                    data.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+        <div>
+            <label for="admin-imagen">URL de la Imagen:</label>
+            <input type="url" id="admin-imagen" placeholder="https://ejemplo.com/imagen.jpg">
+        </div>
 
-                    data.slice(0, 3).forEach(noticia => {
-                        let fechaLimpia = noticia.fecha ? String(noticia.fecha).split('T')[0] : '';
-                        let horaLimpia = noticia.hora ? String(noticia.hora) : '';
+        <div>
+            <label for="admin-categoria">Categoría:</label>
+            <select id="admin-categoria" required>
+                <option value="">Selecciona una categoría</option>
+                <option value="provincial">Provincial</option>
+                <option value="nacional">Nacional</option>
+                <option value="internacional">Internacional</option>
+            </select>
+        </div>
 
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${fechaLimpia} ${horaLimpia}</td>
-                            <td>${noticia.titulo || ''}</td>
-                            <td>${noticia.categoria || ''}</td>
-                            <td>
-                                <button class="btn-editar" onclick='prepararEdicion(${JSON.stringify(noticia)})'>Editar</button>
-                                <button class="btn-borrar" onclick="borrarNoticia('${noticia.id}')">Borrar</button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                })
-                .catch(err => console.error("Error cargando admin:", err));
-        }
+        <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+                <label for="admin-fecha">Fecha:</label>
+                <input type="date" id="admin-fecha">
+            </div>
+            <div style="flex: 1;">
+                <label for="admin-hora">Hora:</label>
+                <input type="time" id="admin-hora">
+            </div>
+        </div>
 
-        function publicarNoticia() {
-            const urlYoutube = document.getElementById('inputVideoYoutube').value.trim();
-            const urlFacebook = document.getElementById('inputVideoFacebook').value.trim();
-            const videoFinal = urlFacebook !== "" ? urlFacebook : urlYoutube;
+        <div>
+            <label for="admin-cuerpo">Cuerpo de la Noticia:</label>
+            <textarea id="admin-cuerpo" required placeholder="Escribe el contenido completo..."></textarea>
+        </div>
 
-            const noticia = {
-                id: document.getElementById('inputEditId').value || Date.now().toString(),
-                titulo: document.getElementById('inputTitulo').value,
-                categoria: document.getElementById('inputCategoria').value,
-                imagen: document.getElementById('inputImagen').value,
-                video: videoFinal,
-                fecha: document.getElementById('inputFecha').value,
-                hora: document.getElementById('inputHora').value,
-                cuerpo: document.getElementById('inputCuerpo').value,
-                accion: document.getElementById('inputEditId').value ? 'editar' : 'crear'
-            };
+        <button type="submit" id="btn-guardar">Publicar Noticia</button>
+        <button type="button" id="btn-cancelar-edicion" class="btn-secundario" style="display: none;" onclick="limpiarFormulario()">Cancelar Edición</button>
+    </form>
 
-            fetch(urlAPI, {
-                method: 'POST',
-                body: JSON.stringify(noticia)
-            })
-            .then(res => res.text())
-            .then(() => {
-                alert("¡Noticia guardada con éxito!");
-                document.getElementById('formNoticia').reset();
-                document.getElementById('inputEditId').value = '';
-                cargarNoticiasAdmin();
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                alert("Hubo un error al guardar.");
-            });
-        }
+    <!-- Sección de Últimas Noticias con Botón de Actualizar -->
+    <div class="admin-header-section">
+        <h3 style="margin: 0;">Últimas 3 Noticias Publicadas</h3>
+        <button onclick="cargarNoticiasAdmin()" style="background: #1877f2; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+            🔄 Actualizar
+        </button>
+    </div>
 
-        function prepararEdicion(noticia) {
-            document.getElementById('inputEditId').value = noticia.id || '';
-            document.getElementById('inputTitulo').value = noticia.titulo || '';
-            document.getElementById('inputCategoria').value = noticia.categoria || 'Provincial';
-            document.getElementById('inputImagen').value = noticia.imagen || '';
-            
-            let vid = noticia.video || noticia.Video || '';
-            if (vid.includes('facebook.com')) {
-                document.getElementById('inputVideoFacebook').value = vid;
-                document.getElementById('inputVideoYoutube').value = '';
-            } else {
-                document.getElementById('inputVideoYoutube').value = vid;
-                document.getElementById('inputVideoFacebook').value = '';
-            }
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Título</th>
+                <th>Categoría</th>
+                <th style="text-align: center;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="lista-admin-body">
+            <!-- Se carga dinámicamente con JS -->
+        </tbody>
+    </table>
+</div>
 
-            document.getElementById('inputFecha').value = noticia.fecha ? String(noticia.fecha).split('T')[0] : '';
-            document.getElementById('inputHora').value = noticia.hora || '';
-            document.getElementById('inputCuerpo').value = noticia.cuerpo || '';
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-
-        function borrarNoticia(id) {
-            if (!confirm("¿Estás seguro de borrar esta noticia?")) return;
-            fetch(urlAPI, {
-                method: 'POST',
-                body: JSON.stringify({ id: id, accion: 'borrar' })
-            })
-            .then(() => {
-                alert("Noticia borrada.");
-                cargarNoticiasAdmin();
-            });
-        }
-    </script>
+<script src="admin.js"></script>
 </body>
 </html>
