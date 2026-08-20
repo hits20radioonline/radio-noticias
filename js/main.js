@@ -36,7 +36,7 @@ function obtenerHtmlMultimedia(urlVideo, urlImagen) {
       return `
         <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
           <iframe 
-            src="https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false" 
+            src="https://www.facebook.com/plugins/video.php?href=${encodedUrl}&show_text=false&app_id=" 
             style="width: 100%; height: 100%; border: none; display: block;" 
             allowfullscreen 
             allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
@@ -189,6 +189,26 @@ function abrirNoticiaModal(noticia) {
 
   const elFecha = document.getElementById('modal-fecha');
   if (elFecha) elFecha.innerText = formatearFechaYHora(noticia.fecha || noticia.Fecha, noticia.hora || noticia.Hora);
+
+  // Agregar botón de compartir en el modal si existe contenedor o crearlo
+  let modalBody = document.querySelector('#modal-noticia .modal-content') || document.getElementById('modal-cuerpo').parentNode;
+  let shareContainer = document.getElementById('modal-share-container');
+  if (!shareContainer) {
+    shareContainer = document.createElement('div');
+    shareContainer.id = 'modal-share-container';
+    shareContainer.style.marginTop = '15px';
+    shareContainer.style.paddingTop = '10px';
+    shareContainer.style.borderTop = '1px solid #eee';
+    modalBody.appendChild(shareContainer);
+  }
+  let linkActual = window.location.origin + window.location.pathname + `?id=${noticia.id}`;
+  shareContainer.innerHTML = `
+    <div style="font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #555;">Compartir esta noticia:</div>
+    <div style="display: flex; gap: 8px;">
+      <input type="text" readonly value="${linkActual}" id="inputShareLink" style="flex: 1; padding: 6px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px; background: #f9f9f9;" onclick="this.select();">
+      <button onclick="navigator.clipboard.writeText('${linkActual}'); alert('¡Enlace copiado al portapapeles!');" style="background: #d9534f; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">Copiar</button>
+    </div>
+  `;
 
   document.getElementById('modal-noticia').style.display = 'flex';
   const nuevaURL = `${window.location.pathname}?id=${noticia.id}`;
